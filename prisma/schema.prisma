@@ -44,6 +44,39 @@ enum StayStatus {
   CANCELLED
 }
 
+enum CaseStatus {
+  INTAKE
+  ACTIVE
+  FOLLOW_UP
+  WAITLIST
+  CLOSED
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ProgramArea {
+  BEGEGNUNG
+  BETREUEN
+  BEHERBERGEN
+  BESCHAEFTIGEN
+}
+
+enum TaskPriority {
+  P1
+  P2
+  P3
+}
+
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
+}
+
 enum AuditAction {
   CREATE
   UPDATE
@@ -69,6 +102,7 @@ model User {
   auditEvents          AuditEvent[]     @relation("AuditActor")
   staysCreated         Stay[]           @relation("StayCreator")
   serviceEventsCreated ServiceEvent[]   @relation("ServiceEventCreator")
+  tasksCreated         Task[]           @relation("TaskCreator")
   syncClients          SyncClient[]
 }
 
@@ -76,6 +110,13 @@ model Case {
   id                 String      @id @default(cuid())
   caseRef            String      @unique
   subjectDisplayName String
+  status             CaseStatus  @default(INTAKE)
+  riskLevel          RiskLevel   @default(MEDIUM)
+  programArea        ProgramArea
+  offering           String
+  assignedTeam       String?
+  nextActionAt       DateTime?
+  intakeAt           DateTime    @default(now())
   dataClass          DataClass
   purpose            String
   legalBasis         LegalBasis
@@ -87,11 +128,14 @@ model Case {
 
   stays         Stay[]
   serviceEvents ServiceEvent[]
+  tasks         Task[]
   documents     DocumentMeta[]
   auditEvents   AuditEvent[]
   assignments   CaseAssignment[]
   syncEvents    SyncEvent[]
 
+  @@index([status])
+  @@index([programArea])
   @@index([dataClass])
   @@index([legalHold])
 }
@@ -151,6 +195,25 @@ model ServiceEvent {
   createdBy User? @relation("ServiceEventCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([caseId, occurredAt])
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  caseId      String
+  title       String
+  details     String?
+  ownerName   String?
+  dueAt       DateTime?
+  priority    TaskPriority @default(P2)
+  status      TaskStatus   @default(OPEN)
+  createdById String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  case      Case  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  createdBy User? @relation("TaskCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([caseId, status, dueAt])
 }
 
 model DocumentMeta {

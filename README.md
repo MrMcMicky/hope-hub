@@ -16,6 +16,19 @@ Next.js App für `hope-hub.online` mit getrennter Dev- und Prod-Umgebung.
   - `src/modules/authz/`
   - `src/app/api/sync/route.ts`
 
+## Produktstatus (Persistente Workflows)
+
+- Persistente Kernworkflows umgesetzt:
+  - Fallführung (Case CRUD)
+  - Aufenthalt (Check-in / Check-out)
+  - Service-Events
+  - Tasks inkl. Statuswechsel
+  - Persistenter Audit-Trail (append-only + Hash-Chain)
+- UI-Routen:
+  - `/hub` (Dashboard)
+  - `/hub/cases` (Fallliste + Fallanlage)
+  - `/hub/cases/[caseId]` (Fallakte mit Workflows)
+
 ## Lokal entwickeln
 
 ```bash
@@ -134,3 +147,12 @@ Für deutsche Texte im Repo gilt verbindlich: Umlaute immer als `ä`, `ö`, `ü`
 Details und Prüfablauf:
 
 - `docs/de-ch-orthografie.md`
+
+## Dokumentation (Pflicht)
+
+- Struktur- und Produktmapping:
+  - `docs/hope-struktur-und-produktmapping-v1.md`
+
+Regel:
+
+- Bei jeder Änderung an Domänenmodell/Workflow-Logik/Angebotsstruktur muss die Doku im gleichen Change mit aktualisiert werden.

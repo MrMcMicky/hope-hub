@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/lib/auth/options";
-import { getPrototypeSnapshot } from "@/lib/prototype/seed-data";
+import { requireHubActor } from "@/lib/auth/session";
+import { ensureSeedData, getDashboardSnapshot } from "@/lib/domain/workflows";
 
-function formatDateTime(iso: string): string {
+function formatDateTime(iso: string | null): string {
+  if (!iso) return "-";
   return new Intl.DateTimeFormat("de-CH", {
     day: "2-digit",
     month: "2-digit",
@@ -15,38 +14,40 @@ function formatDateTime(iso: string): string {
   }).format(new Date(iso));
 }
 
-function formatRelativeHours(iso: string): string {
+function formatRelativeTime(iso: string | null): string {
+  if (!iso) return "-";
   const diffMs = Date.now() - new Date(iso).getTime();
-  const hours = Math.max(0, Math.round(diffMs / (1000 * 60 * 60)));
-  if (hours < 1) return "<1h";
+  const minutes = Math.max(0, Math.round(diffMs / (1000 * 60)));
+  if (minutes < 1) return "<1m";
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.round(minutes / 60);
   return `${hours}h`;
 }
 
 export const metadata = {
-  title: "HOPE Hub Demo Cockpit",
+  title: "HOPE Hub Operations",
 };
 
 export default async function HubPage() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    redirect("/auth/login?callbackUrl=%2Fhub");
-  }
-
-  const snapshot = getPrototypeSnapshot();
+  const actor = await requireHubActor("/hub");
+  await ensureSeedData(actor);
+  const snapshot = await getDashboardSnapshot(actor);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8 sm:px-10">
       <header className="rounded-3xl border border-black/10 bg-surface/95 p-6 shadow-[0_18px_60px_-26px_rgb(18_22_27/0.38)] sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-strong">HOPE Hub Prototype</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-strong">HOPE Hub</p>
             <h1 className="mt-2 font-display text-3xl leading-tight text-foreground sm:text-4xl">Operations Cockpit</h1>
             <p className="mt-3 text-sm text-foreground/75">
-              Angemeldet als <strong>{session.user.email}</strong> ({session.user.role}) | Datenstand{" "}
-              {formatDateTime(snapshot.generatedAt)}
+              Angemeldet als <strong>{actor.email}</strong> ({actor.roles[0]}) | Datenstand {formatDateTime(snapshot.generatedAt)}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/hub/cases" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
+              Fälle verwalten
+            </Link>
             <Link href="/" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
               Landing
             </Link>
@@ -84,28 +85,32 @@ export default async function HubPage() {
         <article className="overflow-hidden rounded-2xl border border-black/8 bg-white">
           <div className="border-b border-black/8 px-5 py-4">
             <h2 className="text-lg font-semibold text-foreground">Case Pipeline</h2>
-            <p className="mt-1 text-sm text-foreground/70">30 seed records für Demo und Proposal Walkthrough.</p>
+            <p className="mt-1 text-sm text-foreground/70">Persistente Fälle mit CRUD-Workflow und Audit-Trail.</p>
           </div>
-          <div className="max-h-[500px] overflow-auto">
+          <div className="max-h-[520px] overflow-auto">
             <table className="min-w-full text-left text-sm">
               <thead className="sticky top-0 bg-white/95 text-xs uppercase tracking-[0.12em] text-foreground/60">
                 <tr>
                   <th className="px-4 py-3">Case</th>
                   <th className="px-4 py-3">Person</th>
+                  <th className="px-4 py-3">Angebot</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Risk</th>
-                  <th className="px-4 py-3">Team</th>
                   <th className="px-4 py-3">Tasks</th>
                 </tr>
               </thead>
               <tbody>
                 {snapshot.cases.map((item) => (
                   <tr key={item.id} className="border-t border-black/6">
-                    <td className="px-4 py-3 font-semibold text-foreground">{item.caseRef}</td>
-                    <td className="px-4 py-3 text-foreground/80">{item.subjectName}</td>
+                    <td className="px-4 py-3 font-semibold text-foreground">
+                      <Link href={`/hub/cases/${item.id}`} className="underline decoration-brand/40 underline-offset-4">
+                        {item.caseRef}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 text-foreground/80">{item.subjectDisplayName}</td>
+                    <td className="px-4 py-3 text-foreground/80">{item.offering}</td>
                     <td className="px-4 py-3 text-foreground/80">{item.status}</td>
                     <td className="px-4 py-3 text-foreground/80">{item.riskLevel}</td>
-                    <td className="px-4 py-3 text-foreground/80">{item.assignedTeam}</td>
                     <td className="px-4 py-3 text-foreground/80">{item.openTasks}</td>
                   </tr>
                 ))}
@@ -119,7 +124,7 @@ export default async function HubPage() {
             <h2 className="text-lg font-semibold text-foreground">Standorte & Belegung</h2>
             <div className="mt-4 space-y-3">
               {snapshot.occupancy.map((site) => {
-                const ratio = Math.round((site.occupied / site.capacity) * 100);
+                const ratio = site.capacity ? Math.round((site.occupied / site.capacity) * 100) : 0;
                 return (
                   <div key={site.site}>
                     <div className="mb-1 flex justify-between text-sm text-foreground/75">
@@ -144,7 +149,7 @@ export default async function HubPage() {
                 <li key={client.id} className="rounded-xl border border-black/8 px-3 py-2">
                   <p className="font-semibold text-foreground">{client.label}</p>
                   <p className="text-foreground/75">
-                    {client.owner} | pending: {client.pendingEvents} | last seen {formatRelativeHours(client.lastSeenAt)}
+                    {client.owner} | pending: {client.pendingEvents} | last seen {formatRelativeTime(client.lastSeenAt)}
                   </p>
                 </li>
               ))}
@@ -165,7 +170,7 @@ export default async function HubPage() {
                 <p className="text-foreground/75">
                   {formatDateTime(activity.occurredAt)} | {activity.actor}
                 </p>
-                <p className="text-foreground/70">{activity.note}</p>
+                <p className="text-foreground/70">{activity.note || "-"}</p>
               </li>
             ))}
           </ul>
