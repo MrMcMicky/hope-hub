@@ -59,7 +59,7 @@ export default async function HubPage() {
 
       <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <article className="rounded-2xl border border-black/8 bg-white p-4">
-          <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">Aktive Faelle</p>
+          <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">Aktive Fälle</p>
           <p className="mt-2 text-3xl font-semibold text-foreground">{snapshot.kpis.activeCases}</p>
         </article>
         <article className="rounded-2xl border border-black/8 bg-white p-4">
@@ -84,7 +84,7 @@ export default async function HubPage() {
         <article className="overflow-hidden rounded-2xl border border-black/8 bg-white">
           <div className="border-b border-black/8 px-5 py-4">
             <h2 className="text-lg font-semibold text-foreground">Case Pipeline</h2>
-            <p className="mt-1 text-sm text-foreground/70">30 seed records fuer Demo und Proposal Walkthrough.</p>
+            <p className="mt-1 text-sm text-foreground/70">30 seed records für Demo und Proposal Walkthrough.</p>
           </div>
           <div className="max-h-[500px] overflow-auto">
             <table className="min-w-full text-left text-sm">
@@ -155,7 +155,7 @@ export default async function HubPage() {
 
       <section className="mt-6 grid gap-4 lg:grid-cols-2">
         <article className="rounded-2xl border border-black/8 bg-white p-5">
-          <h2 className="text-lg font-semibold text-foreground">Neueste Aktivitaeten</h2>
+          <h2 className="text-lg font-semibold text-foreground">Neueste Aktivitäten</h2>
           <ul className="mt-4 space-y-2 text-sm">
             {snapshot.activities.slice(0, 12).map((activity) => (
               <li key={activity.id} className="rounded-xl border border-black/8 px-3 py-2">

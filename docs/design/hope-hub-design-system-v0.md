@@ -24,7 +24,7 @@ Recommended model:
 
 Application:
 - Header: HOPE logo (small) + text `HOPE Hub`.
-- Login title: `HOPE Hub - Geschuetzter Bereich`.
+- Login title: `HOPE Hub - Geschützter Bereich`.
 - Favicon/app icon: HOPE sun symbol (with optional subtle `H` mark).
 
 ## 3) Visual principles
@@ -109,7 +109,7 @@ Tone:
 - Avoid ambiguous or overly promotional microcopy in work modules.
 
 Naming pattern:
-- Prefer explicit task labels (`Check-in speichern`, `Export verschluesseln`) over generic labels (`Weiter`, `Senden`).
+- Prefer explicit task labels (`Check-in speichern`, `Export verschlüsseln`) over generic labels (`Weiter`, `Senden`).
 
 ## 9) Implementation notes for current codebase
 

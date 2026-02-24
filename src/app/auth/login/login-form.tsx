@@ -30,7 +30,7 @@ export function DemoAdminLoginForm({ defaultEmail, enabled, callbackUrl = "/hub"
     });
 
     if (result?.error) {
-      setError("Anmeldung fehlgeschlagen. Bitte Zugangsdaten pruefen.");
+      setError("Anmeldung fehlgeschlagen. Bitte Zugangsdaten prüfen.");
       setIsSubmitting(false);
       return;
     }
@@ -84,7 +84,7 @@ export function DemoAdminLoginForm({ defaultEmail, enabled, callbackUrl = "/hub"
         disabled={!enabled || isSubmitting}
         className="inline-flex rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
       >
-        {isSubmitting ? "Anmeldung laeuft..." : "Als Demo Admin anmelden"}
+        {isSubmitting ? "Anmeldung läuft..." : "Als Demo Admin anmelden"}
       </button>
     </form>
   );

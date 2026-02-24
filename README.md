@@ -1,6 +1,6 @@
 # hope-hub
 
-Next.js App fuer `hope-hub.online` mit getrennter Dev- und Prod-Umgebung.
+Next.js App für `hope-hub.online` mit getrennter Dev- und Prod-Umgebung.
 
 ## Foundation Status (Phase 0)
 
@@ -35,7 +35,7 @@ npm run db:migrate:dev
 # Migrationen auf Zielsystem anwenden
 npm run db:migrate:deploy
 
-# Migrationsstatus pruefen
+# Migrationsstatus prüfen
 npm run db:migrate:status
 ```
 
@@ -61,7 +61,7 @@ Hinweis:
 
 ## Demo Login (Prototype)
 
-Fuer Demo-/Proposal-Termine kann ein Credentials-Login aktiviert werden:
+Für Demo-/Proposal-Termine kann ein Credentials-Login aktiviert werden:
 
 ```bash
 DEMO_ADMIN_EMAIL=demo.admin@example.com
@@ -72,10 +72,10 @@ DEMO_ADMIN_NAME="Demo Super Admin"
 Routen:
 
 - Login Seite: `/auth/login`
-- Demo Cockpit (geschuetzt): `/hub`
+- Demo Cockpit (geschützt): `/hub`
 
 Hinweis:
-- Der Demo-Login ist nur fuer Prototyping gedacht und ersetzt kein produktives IAM.
+- Der Demo-Login ist nur für Prototyping gedacht und ersetzt kein produktives IAM.
 
 ## Ports (Server)
 
@@ -125,4 +125,12 @@ Cloudflare Tunnel: `/etc/cloudflared/config.yml`
 
 ## Hinweis
 
-`.env*` Dateien sind in `.gitignore` und duerfen nicht committed werden.
+`.env*` Dateien sind in `.gitignore` und dürfen nicht committed werden.
+
+## Sprachregel Deutsch (Schweiz)
+
+Für deutsche Texte im Repo gilt verbindlich: Umlaute immer als `ä`, `ö`, `ü` schreiben; keine Umschreibung mit `ae`, `oe`, `ue` in Fliesstexten.
+
+Details und Prüfablauf:
+
+- `docs/de-ch-orthografie.md`

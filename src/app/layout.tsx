@@ -14,7 +14,7 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: "HOPE-Hub",
-  description: "Digitale Plattform fuer Gemeinschaft, Hoffnung und konkrete Schritte.",
+  description: "Digitale Plattform für Gemeinschaft, Hoffnung und konkrete Schritte.",
 };
 
 export default function RootLayout({

@@ -23,9 +23,9 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
         <p className="mb-4 inline-flex rounded-full border border-brand/25 bg-brand/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-strong">
           HOPE Hub
         </p>
-        <h1 className="font-display text-3xl leading-tight text-foreground">Geschuetzter Bereich</h1>
+        <h1 className="font-display text-3xl leading-tight text-foreground">Geschützter Bereich</h1>
         <p className="mt-4 text-sm leading-6 text-foreground/75">
-          Anmeldung per Demo-Credentials oder ueber den zentralen OIDC-Provider (Authentik).
+          Anmeldung per Demo-Credentials oder über den zentralen OIDC-Provider (Authentik).
         </p>
 
         <DemoAdminLoginForm
@@ -53,7 +53,7 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
 
         <div className="mt-8 text-sm text-foreground/70">
           <Link href="/" className="underline decoration-brand/50 underline-offset-4">
-            Zurueck zur Startseite
+            Zurück zur Startseite
           </Link>
         </div>
       </section>

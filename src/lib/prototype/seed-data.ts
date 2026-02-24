@@ -76,7 +76,7 @@ const subjectNames = [
   "D. Frei",
   "K. Lorenz",
   "G. Haas",
-  "B. Krueger",
+  "B. Krüger",
   "Y. Lehmann",
   "C. Steiner",
   "O. Graf",
@@ -150,7 +150,7 @@ function buildActivities(cases: PrototypeCase[]): PrototypeActivity[] {
       actor: activityActors[index % activityActors.length],
       note:
         index % 3 === 0
-          ? "Kontakt dokumentiert, naechster Schritt terminiert."
+          ? "Kontakt dokumentiert, nächster Schritt terminiert."
           : "Status aktualisiert und Team informiert.",
     };
   });
@@ -164,7 +164,7 @@ function buildTasks(cases: PrototypeCase[]): PrototypeTask[] {
     const caseItem = cases[(index * 2) % cases.length];
     return {
       id: `task-${index + 1}`,
-      title: index % 2 === 0 ? "Follow-up Termin bestaetigen" : "Dokumentations-Review abschliessen",
+      title: index % 2 === 0 ? "Follow-up Termin bestätigen" : "Dokumentations-Review abschliessen",
       caseRef: caseItem.caseRef,
       owner: taskOwners[index % taskOwners.length],
       dueAt: isoHoursFromNow(index + 2),
@@ -195,7 +195,7 @@ export function getPrototypeSnapshot(): PrototypeSnapshot {
     { site: "Haus A", capacity: 32, occupied: 29 },
     { site: "Haus B", capacity: 24, occupied: 20 },
     { site: "Notaufnahme Nacht", capacity: 12, occupied: 11 },
-    { site: "Uebergang Wohnen", capacity: 18, occupied: 14 },
+    { site: "Übergang Wohnen", capacity: 18, occupied: 14 },
   ];
 
   const totalCapacity = occupancy.reduce((sum, item) => sum + item.capacity, 0);

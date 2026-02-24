@@ -8,11 +8,11 @@ export default function Home() {
     },
     {
       title: "Care",
-      text: "Beduerfnisse, Gebetsanliegen und Unterstuetzung werden sichtbar und koordiniert.",
+      text: "Bedürfnisse, Gebetsanliegen und Unterstützung werden sichtbar und koordiniert.",
     },
     {
       title: "Cultivate",
-      text: "Klare naechste Schritte helfen, Glauben und Gemeinschaft praktisch zu leben.",
+      text: "Klare nächste Schritte helfen, Glauben und Gemeinschaft praktisch zu leben.",
     },
   ];
 
@@ -63,7 +63,7 @@ export default function Home() {
 
       <section className="mt-auto pt-8">
         <div className="rounded-2xl border border-dashed border-brand/35 bg-white/65 px-6 py-4 text-sm text-foreground/75">
-          Naechster Schritt: Sende mir Konzept, Zielgruppe, Kernfeatures und visuelle Leitplanken.
+          Nächster Schritt: Sende mir Konzept, Zielgruppe, Kernfeatures und visuelle Leitplanken.
         </div>
       </section>
     </main>

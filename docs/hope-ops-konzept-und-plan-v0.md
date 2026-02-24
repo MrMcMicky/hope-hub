@@ -3,7 +3,7 @@
 - Status: Draft v0 (Startdokument)
 - Stand: 2026-02-23
 - Kontext: Erste Arbeitsfassung auf Basis der gelieferten Architektur-Spezifikation v1
-- Ziel: Von "Next.js Grundsetup" zu einem auditfaehigen, offline-faehigen, on-prem MVP
+- Ziel: Von "Next.js Grundsetup" zu einem auditfähigen, offline-fähigen, on-prem MVP
 
 Erweiterungen in diesem Stand:
 - Design-/Brand-Research aus `hope-baden.ch` aufgenommen
@@ -47,22 +47,22 @@ Aktueller Stand im Repo:
   - Redis Rate Limiter: `webapps/taize-dev/src/lib/rate-limit.ts`
   - Betriebsdokumentation PM2/Tunnel: `webapps/taize-dev/README.md`
 
-### 2.2 Muster, die wir bewusst nicht uebernehmen
+### 2.2 Muster, die wir bewusst nicht übernehmen
 
 1. `in-or-out`
-- Kein belastbares IAM/RBAC fuers HOPE-Setting.
-- Public API/Socket Flows sind fuer Compliance- und Audit-Anforderungen zu offen.
+- Kein belastbares IAM/RBAC fürs HOPE-Setting.
+- Public API/Socket Flows sind für Compliance- und Audit-Anforderungen zu offen.
 - Relevante Referenzen:
   - Custom Socket Server: `webapps/in-or-out/server.js`
   - API ohne fachliches IAM: `webapps/in-or-out/src/app/api/game/start/route.ts`
 
 ### 2.3 Fazit Vergleich
 
-- Die Bausteine fuer HOPE Hub existieren verteilt in eurem Bestand.
+- Die Bausteine für HOPE Hub existieren verteilt in eurem Bestand.
 - Es fehlt aber bisher nirgends die volle Kombination aus:
   - Offline Event-Sync,
   - striktem ABAC/RLS,
-  - Export-Payload-Verschluesselung,
+  - Export-Payload-Verschlüsselung,
   - Retention/Legal-Hold,
   - revisionsfester Audit-Kette.
 
@@ -73,7 +73,7 @@ Aktueller Stand im Repo:
 - Quelle: https://nextjs.org/docs/app/guides/progressive-web-apps
 
 2. Next.js Security Headers
-- HSTS und weitere Header sind nativ ueber `next.config` Headers konfigurierbar.
+- HSTS und weitere Header sind nativ über `next.config` Headers konfigurierbar.
 - Quelle: https://nextjs.org/docs/app/api-reference/config/next-config-js/headers
 
 3. PostgreSQL RLS
@@ -81,17 +81,17 @@ Aktueller Stand im Repo:
 - Quelle: https://www.postgresql.org/docs/current/ddl-rowsecurity.html
 
 4. Keycloak/Authentik OIDC
-- Beide sind fuer OIDC-Provider-Rolle robust nutzbar.
+- Beide sind für OIDC-Provider-Rolle robust nutzbar.
 - Quellen:
   - Keycloak OIDC: https://www.keycloak.org/securing-apps/oidc-layers
   - Authentik OAuth2/OIDC: https://docs.goauthentik.io/add-secure-apps/providers/oauth2/
 
 5. MinIO SSE
-- SSE-KMS wird als bevorzugte Variante dokumentiert; at-rest Verschluesselung ist compliance-relevant.
+- SSE-KMS wird als bevorzugte Variante dokumentiert; at-rest Verschlüsselung ist compliance-relevant.
 - Quelle: https://docs.min.io/enterprise/aistor-object-store/installation/linux/server-side-encryption/
 
-6. AVB Aargau 2026 (von dir referenziert, gegen PDF geprueft)
-- Besonders schuetzenswerte Daten: Payload selbst verschluesseln, TLS alleine reicht nicht.
+6. AVB Aargau 2026 (von dir referenziert, gegen PDF geprüft)
+- Besonders schützenswerte Daten: Payload selbst verschlüsseln, TLS alleine reicht nicht.
 - Archivregel: Klientendaten bis 100. Altersjahr, Verwaltungsakten 10 Jahre und danach Staatsarchiv anbieten.
 - Quelle: https://www.ag.ch/media/kanton-aargau/bks/behindertenbetreuung/einrichtungen/bksshw-avb-def.pdf
 
@@ -106,30 +106,30 @@ Aktueller Stand im Repo:
 
 - Compliance Vertiefung (CH/AG): `docs/compliance/hope-hub-compliance-research-v0.md`
 - Design-/Style-Audit der HOPE Website: `docs/design/hope-website-style-audit-v0.md`
-- Design-System Leitlinien fuer Produkt-UI: `docs/design/hope-hub-design-system-v0.md`
-- Runtime Tokens fuer UI-Implementierung: `src/app/tokens.css`
+- Design-System Leitlinien für Produkt-UI: `docs/design/hope-hub-design-system-v0.md`
+- Runtime Tokens für UI-Implementierung: `src/app/tokens.css`
 - Gesicherte Brand Assets: `docs/design/assets/hope-logo-inline-2026-02-23.svg`, `docs/design/assets/hope-favicon-2026-02-23.avif`
 
-## 4) Zielarchitektur fuer `hope-hub` (MVP-tauglich)
+## 4) Zielarchitektur für `hope-hub` (MVP-tauglich)
 
 ## 4.1 Architekturentscheidung (v0)
 
-Empfehlung fuer Phase 0-1:
+Empfehlung für Phase 0-1:
 - Frontend/BFF: Next.js App Router im bestehenden Repo
 - IAM: externer OIDC Provider (Keycloak oder Authentik)
 - Daten: PostgreSQL (RLS + Audit + Event Store)
 - Dokumente/Exports: MinIO
-- Jobs: Redis + BullMQ (mindestens fuer Export, Retention, Reporting-Jobs)
+- Jobs: Redis + BullMQ (mindestens für Export, Retention, Reporting-Jobs)
 
 Warum so:
 - Hohe Wiederverwendung aus `church-nextjs` + `taize-dev`.
 - Schnellster Weg zu MVP ohne sofortigen Multi-Service-Overhead.
-- Trotzdem sauber auf spaetere Service-Aufspaltung vorbereitbar.
+- Trotzdem sauber auf spätere Service-Aufspaltung vorbereitbar.
 
 ## 4.2 Fachkern (v1)
 
-- Event-first fuer Offline Sync (append-only Client Events)
-- Materialisierte Read Models fuer schnelle Schichtscreens
+- Event-first für Offline Sync (append-only Client Events)
+- Materialisierte Read Models für schnelle Schichtscreens
 - Pflicht-Metadaten je Datensatz:
   - `data_class`
   - `purpose`
@@ -140,12 +140,12 @@ Warum so:
 
 - MFA via IAM
 - API deny-by-default
-- DB RLS fuer `Case`, `Stay`, `ServiceEvent`, `DocumentMeta`
+- DB RLS für `Case`, `Stay`, `ServiceEvent`, `DocumentMeta`
 - Audit append-only + Hash-Chain pro Case
 - Export nur mit legal basis + share policy + payload encryption
 - Retention + legal hold policy engine
 
-## 5) Repo-Zielstruktur (Start fuer Implementierung)
+## 5) Repo-Zielstruktur (Start für Implementierung)
 
 ```text
 hope-hub/
@@ -198,7 +198,7 @@ hope-hub/
       report-worker.ts
 ```
 
-Hinweis: `worker/` kann optional spaeter ausgelagert werden. Startweise kann er auch als interner Prozess laufen.
+Hinweis: `worker/` kann optional später ausgelagert werden. Startweise kann er auch als interner Prozess laufen.
 
 ## 6) Phasenplan (v0)
 
@@ -214,19 +214,19 @@ Arbeitspakete:
 4. PostgreSQL Setup + erste RLS Policies
 5. AuditEvent Basismodell + append-only write path
 6. DSFA Checkliste + Incident Runbook + Logging Baseline
-7. UI Token Baseline aus HOPE Brand (Farben/Schriften/Abstaende) als `tokens`-Dokument
+7. UI Token Baseline aus HOPE Brand (Farben/Schriften/Abstände) als `tokens`-Dokument
 
 Abnahme:
 - Login mit MFA aktiv
 - API deny-by-default aktiv
 - Erste RLS Policies aktiv
-- Audit Events fuer create/update/export vorhanden
+- Audit Events für create/update/export vorhanden
 - Brand-konforme UI-Basis (Design Tokens + Logo Assets) im Repo dokumentiert
 
 ## Phase 1 - MVP Vertical Slice (P0, ca. 4-7 Wochen)
 
 Ziele:
-- "Stay + Kostengutsprache + sichere Uebergabe + Billing Entwurf" produktionsnah bereit.
+- "Stay + Kostengutsprache + sichere Übergabe + Billing Entwurf" produktionsnah bereit.
 
 Arbeitspakete:
 1. Case/Person minimal + Stay + Check-in/out
@@ -239,18 +239,18 @@ Arbeitspakete:
 Abnahme:
 - Offline Check-in/out + Sync stabil
 - InvoiceDraft aus ServiceEvent+CostApproval generierbar
-- Export nur verschluesselt + voll auditiert
+- Export nur verschlüsselt + voll auditiert
 
 ## Phase 2 - Hardening & Betrieb (P0/P1, ca. 2-4 Wochen)
 
 Ziele:
-- Betriebssicherheit und Nachweisfaehigkeit auf Produktionsniveau.
+- Betriebssicherheit und Nachweisfähigkeit auf Produktionsniveau.
 
 Arbeitspakete:
 1. Retention Engine + Legal Hold
 2. Backup/WAL/Restore-Test dokumentiert
 3. Monitoring + Alerts (auth anomalies, export spikes, backup failures)
-4. Audit Report/Export fuer Leitung/QM
+4. Audit Report/Export für Leitung/QM
 
 Abnahme:
 - Restore-Test erfolgreich dokumentiert
@@ -262,34 +262,34 @@ Abnahme:
 1. Architekturentscheidungen sind getroffen
 - IAM Provider: Authentik (ADR-002)
 - Exportformat: `age` als Default, PGP als Fallback (ADR-003)
-- DB Access: Prisma + SQL layer fuer RLS-kritische Pfade (ADR-001)
+- DB Access: Prisma + SQL layer für RLS-kritische Pfade (ADR-001)
 
 2. Technisches Bootstrap ist im Repo umgesetzt
 - `docs/adr/*` angelegt
 - `prisma/schema.prisma` + initiale Migration angelegt
 - `src/modules/audit` + `src/modules/authz` als Foundation-Skeletons angelegt
-- `src/app/api/sync/route.ts` als geschuetzte Sync-Basisroute angelegt
+- `src/app/api/sync/route.ts` als geschützte Sync-Basisroute angelegt
 
 3. Security-Baseline vorbereitet
 - Pflichtfelder (`data_class`, `purpose`, `legal_basis`, `share_policy`) als Model-Bestandteil im Schema
-- Audit Hash-Chain Skeleton fuer append-only Events vorhanden
+- Audit Hash-Chain Skeleton für append-only Events vorhanden
 - Authz Guard als deny-by-default Kontrollpunkt vorhanden
 - OIDC Basis via Authentik (`next-auth`) mit Login-/Error-Seiten und Session-Claims-Mapping ist integriert
 
-## 8) Offene Fragen fuer die naechsten Umsetzungsrunden
+## 8) Offene Fragen für die nächsten Umsetzungsrunden
 
-1. Welche Schicht-Rollen muessen im MVP zwingend offline lesen duerfen?
+1. Welche Schicht-Rollen müssen im MVP zwingend offline lesen dürfen?
 2. Soll `worker/` direkt separater Prozess sein oder erst in Phase 2?
 3. Wie stark soll HOPE Hub visuell am Marketingauftritt bleiben vs. eigener \"Operations UI\" Stil?
 
-## 9) Risikoindex (frueh aktiv adressieren)
+## 9) Risikoindex (früh aktiv adressieren)
 
 - RLS/ABAC zu eng oder zu weit: hoher Impact auf Datenschutz und Bedienbarkeit
-- Offline leakage: ohne starke lokale Verschluesselung nicht akzeptabel
+- Offline leakage: ohne starke lokale Verschlüsselung nicht akzeptabel
 - Export-Key-Management: organisatorisch und technisch zusammen designen
-- Retention zu spaet: fuehrt zu teuren Datenmigrationen
+- Retention zu spät: führt zu teuren Datenmigrationen
 - Fehlende Tests: bei Compliance-Systemen untragbar
 
 ---
 
-Dieses Dokument ist absichtlich als Arbeitsdokument geschrieben und wird mit deinen naechsten Inputs iterativ in v1 ueberfuehrt.
+Dieses Dokument ist absichtlich als Arbeitsdokument geschrieben und wird mit deinen nächsten Inputs iterativ in v1 überführt.
