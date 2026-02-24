@@ -257,36 +257,29 @@ Abnahme:
 - Retention-Regeln aktiv
 - Alerting aktiv
 
-## 7) Konkreter Start-Backlog fuer die naechste Umsetzungsrunde
+## 7) Umgesetzter Bootstrap-Stand (2026-02-24)
 
-1. Architekturentscheid finalisieren
-- IAM: Keycloak vs Authentik
-- Exportformat: age vs PGP
-- DB Access: Prisma-only vs Prisma + SQL layer fuer RLS-kritische Queries
+1. Architekturentscheidungen sind getroffen
+- IAM Provider: Authentik (ADR-002)
+- Exportformat: `age` als Default, PGP als Fallback (ADR-003)
+- DB Access: Prisma + SQL layer fuer RLS-kritische Pfade (ADR-001)
 
-2. Technisches Bootstrap im Repo
-- `docs/adr/*` anlegen
-- `prisma/schema.prisma` + initial migrations
-- `src/modules/audit` + `src/modules/authz` skeleton
-- `src/app/api/sync/route.ts` skeleton
+2. Technisches Bootstrap ist im Repo umgesetzt
+- `docs/adr/*` angelegt
+- `prisma/schema.prisma` + initiale Migration angelegt
+- `src/modules/audit` + `src/modules/authz` als Foundation-Skeletons angelegt
+- `src/app/api/sync/route.ts` als geschuetzte Sync-Basisroute angelegt
 
-3. Security/Compliance zuerst
-- Klassifizierungsfelder als Pflicht im Domainmodell
-- AuditEvent write path fuer kritische Aktionen
-- Export policy guard (legal basis + share policy)
+3. Security-Baseline vorbereitet
+- Pflichtfelder (`data_class`, `purpose`, `legal_basis`, `share_policy`) als Model-Bestandteil im Schema
+- Audit Hash-Chain Skeleton fuer append-only Events vorhanden
+- Authz Guard als deny-by-default Kontrollpunkt vorhanden
 
-4. Designmaterial nutzbar machen
-- gemeinsame `tokens` Datei fuer Frontend-Implementierung anlegen
-- erste App-Shell (Header, Navigation, Sidebar) an HOPE Brand anlehnen
-- Kontrast-/Accessibility Check der Primarfarben (WCAG AA)
+## 8) Offene Fragen fuer die naechsten Umsetzungsrunden
 
-## 8) Offene Fragen fuer deine naechsten Prompts
-
-1. Priorisierter IAM Provider jetzt schon festlegen?
-2. Soll v1 Exporte primar `age` nutzen oder PGP wegen Partner-Kompatibilitaet?
-3. Welche Schicht-Rollen muessen im MVP zwingend offline lesen duerfen?
-4. Soll `worker/` direkt separater Prozess sein oder erst in Phase 2?
-5. Wie stark soll HOPE Hub visuell am Marketingauftritt bleiben vs. eigener "Operations UI" Stil?
+1. Welche Schicht-Rollen muessen im MVP zwingend offline lesen duerfen?
+2. Soll `worker/` direkt separater Prozess sein oder erst in Phase 2?
+3. Wie stark soll HOPE Hub visuell am Marketingauftritt bleiben vs. eigener \"Operations UI\" Stil?
 
 ## 9) Risikoindex (frueh aktiv adressieren)
 

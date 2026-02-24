@@ -2,11 +2,41 @@
 
 Next.js App fuer `hope-hub.online` mit getrennter Dev- und Prod-Umgebung.
 
+## Foundation Status (Phase 0)
+
+- Architektur- und Security-Entscheide sind als ADRs dokumentiert:
+  - `docs/adr/ADR-001-foundation-architecture.md`
+  - `docs/adr/ADR-002-iam-provider.md`
+  - `docs/adr/ADR-003-export-encryption.md`
+- Technisches Bootstrap ist angelegt:
+  - `prisma/schema.prisma`
+  - `prisma/migrations/`
+  - `prisma/policies/README.md`
+  - `src/modules/audit/`
+  - `src/modules/authz/`
+  - `src/app/api/sync/route.ts`
+
 ## Lokal entwickeln
 
 ```bash
 npm install
 npm run dev
+```
+
+## Datenbank (Prisma Bootstrap)
+
+```bash
+# Prisma Client generieren
+npm run db:generate
+
+# Lokale Migration entwickeln
+npm run db:migrate:dev
+
+# Migrationen auf Zielsystem anwenden
+npm run db:migrate:deploy
+
+# Migrationsstatus pruefen
+npm run db:migrate:status
 ```
 
 ## Ports (Server)

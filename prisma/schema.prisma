@@ -1,0 +1,225 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  SHIFT_LEAD
+  SHIFT_WORKER
+  AUDITOR
+  BILLING
+}
+
+enum DataClass {
+  PUBLIC
+  INTERNAL
+  CONFIDENTIAL
+  HIGHLY_SENSITIVE
+}
+
+enum LegalBasis {
+  CONSENT
+  CONTRACT
+  LEGAL_OBLIGATION
+  VITAL_INTEREST
+  PUBLIC_TASK
+  LEGITIMATE_INTEREST
+}
+
+enum SharePolicy {
+  INTERNAL_ONLY
+  NEED_TO_KNOW
+  AUTHORITY_ONLY
+  PARTNER_ALLOWED
+}
+
+enum StayStatus {
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  EXPORT
+  PERMISSION_CHANGE
+  SYNC_APPEND
+  LOGIN
+  LOGOUT
+}
+
+model User {
+  id          String   @id @default(cuid())
+  externalId  String   @unique
+  email       String   @unique
+  displayName String?
+  role        UserRole @default(SHIFT_WORKER)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assignments          CaseAssignment[]
+  auditEvents          AuditEvent[]     @relation("AuditActor")
+  staysCreated         Stay[]           @relation("StayCreator")
+  serviceEventsCreated ServiceEvent[]   @relation("ServiceEventCreator")
+  syncClients          SyncClient[]
+}
+
+model Case {
+  id                 String      @id @default(cuid())
+  caseRef            String      @unique
+  subjectDisplayName String
+  dataClass          DataClass
+  purpose            String
+  legalBasis         LegalBasis
+  sharePolicy        SharePolicy
+  retentionRule      String
+  legalHold          Boolean     @default(false)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  stays         Stay[]
+  serviceEvents ServiceEvent[]
+  documents     DocumentMeta[]
+  auditEvents   AuditEvent[]
+  assignments   CaseAssignment[]
+  syncEvents    SyncEvent[]
+
+  @@index([dataClass])
+  @@index([legalHold])
+}
+
+model CaseAssignment {
+  id         String    @id @default(cuid())
+  caseId     String
+  userId     String
+  assignedAt DateTime  @default(now())
+  revokedAt  DateTime?
+
+  case Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([caseId, userId])
+  @@index([userId])
+}
+
+model Stay {
+  id          String      @id @default(cuid())
+  caseId      String
+  checkInAt   DateTime
+  checkOutAt  DateTime?
+  status      StayStatus  @default(CHECKED_IN)
+  dataClass   DataClass
+  purpose     String
+  legalBasis  LegalBasis
+  sharePolicy SharePolicy
+  createdById String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  case          Case           @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  createdBy     User?          @relation("StayCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  serviceEvents ServiceEvent[]
+
+  @@index([caseId, checkInAt])
+}
+
+model ServiceEvent {
+  id          String      @id @default(cuid())
+  caseId      String
+  stayId      String?
+  eventType   String
+  occurredAt  DateTime
+  notes       String?
+  dataClass   DataClass
+  purpose     String
+  legalBasis  LegalBasis
+  sharePolicy SharePolicy
+  createdById String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  case      Case  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  stay      Stay? @relation(fields: [stayId], references: [id], onDelete: SetNull)
+  createdBy User? @relation("ServiceEventCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([caseId, occurredAt])
+}
+
+model DocumentMeta {
+  id             String      @id @default(cuid())
+  caseId         String
+  objectKey      String      @unique
+  filename       String
+  mimeType       String
+  bytes          Int
+  checksumSha256 String
+  encrypted      Boolean     @default(true)
+  dataClass      DataClass
+  purpose        String
+  legalBasis     LegalBasis
+  sharePolicy    SharePolicy
+  createdAt      DateTime    @default(now())
+  deletedAt      DateTime?
+
+  case Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId, createdAt])
+}
+
+model AuditEvent {
+  id         String      @id @default(cuid())
+  caseId     String?
+  action     AuditAction
+  entityType String
+  entityId   String
+  actorId    String?
+  eventTs    DateTime    @default(now())
+  payload    Json
+  prevHash   String?
+  eventHash  String
+
+  case  Case? @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  actor User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([caseId, eventTs])
+  @@index([action, eventTs])
+}
+
+model SyncClient {
+  id          String    @id @default(cuid())
+  clientRef   String    @unique
+  userId      String
+  deviceLabel String?
+  lastSeenAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  events SyncEvent[]
+
+  @@index([userId])
+}
+
+model SyncEvent {
+  id           String    @id @default(cuid())
+  syncClientId String
+  caseId       String
+  sequence     Int
+  eventType    String
+  payload      Json
+  receivedAt   DateTime  @default(now())
+  appliedAt    DateTime?
+
+  syncClient SyncClient @relation(fields: [syncClientId], references: [id], onDelete: Cascade)
+  case       Case       @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@unique([syncClientId, sequence])
+  @@index([caseId, receivedAt])
+}
