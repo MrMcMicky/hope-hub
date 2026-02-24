@@ -28,6 +28,8 @@ Next.js App für `hope-hub.online` mit getrennter Dev- und Prod-Umgebung.
   - `/hub` (Dashboard)
   - `/hub/cases` (Fallliste + Fallanlage)
   - `/hub/cases/[caseId]` (Fallakte mit Workflows)
+- Sales-Frontpage für Erstgespräche:
+  - `/` (Nutzenargumentation, Demo-Ablauf, HOPE-Struktur, nächste Ausbauschritte)
 
 ## Lokal entwickeln
 
