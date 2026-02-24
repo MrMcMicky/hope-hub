@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { createCaseAction } from "@/app/hub/actions";
+import { HubNav } from "@/app/hub/_components/hub-nav";
+import { StatusBadge } from "@/app/hub/_components/status-badge";
 import { requireHubActor } from "@/lib/auth/session";
 import { HUB_SELECTS, ensureSeedData, listCases } from "@/lib/domain/workflows";
 
@@ -38,30 +40,17 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8 sm:px-10">
       <header className="rounded-3xl border border-black/10 bg-surface/95 p-6 shadow-[0_18px_60px_-26px_rgb(18_22_27/0.38)] sm:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-strong">HOPE Hub</p>
             <h1 className="mt-2 font-display text-3xl leading-tight text-foreground">Fälle</h1>
-            <p className="mt-2 text-sm text-foreground/75">Persistente Fallführung mit strukturierter HOPE-Abbildung.</p>
+            <p className="mt-2 text-sm text-foreground/85">Persistente Fallführung mit strukturierter HOPE-Abbildung.</p>
           </div>
-          <div className="flex gap-3">
-            <Link href="/hub" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
-              Dashboard
-            </Link>
-            <Link href="/hub/billing" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
-              Billing
-            </Link>
-            <Link href="/hub/exports" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
-              Exporte
-            </Link>
-            <Link href="/hub/sync" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
-              Sync
-            </Link>
-          </div>
+          <HubNav active="cases" />
         </div>
       </header>
 
-      <section className="mt-6 rounded-2xl border border-black/8 bg-white p-5">
+      <section id="new-case" className="mt-6 rounded-2xl border border-black/8 bg-white p-5">
         <h2 className="text-lg font-semibold text-foreground">Neuen Fall anlegen</h2>
         <form action={createCaseAction} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <label className="text-sm text-foreground/80">
@@ -222,7 +211,7 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
 
         <div className="mt-4 overflow-auto">
           <table className="min-w-full text-left text-sm">
-            <thead className="text-xs uppercase tracking-[0.12em] text-foreground/60">
+            <thead className="sticky top-0 bg-white text-xs uppercase tracking-[0.12em] text-foreground/70">
               <tr>
                 <th className="px-3 py-2">Case</th>
                 <th className="px-3 py-2">Person</th>
@@ -232,6 +221,7 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
                 <th className="px-3 py-2">Retention</th>
                 <th className="px-3 py-2">Open Tasks</th>
                 <th className="px-3 py-2">Open Stay</th>
+                <th className="px-3 py-2">Aktion</th>
               </tr>
             </thead>
             <tbody>
@@ -242,13 +232,18 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
                       {item.caseRef}
                     </Link>
                   </td>
-                  <td className="px-3 py-2 text-foreground/80">{item.subjectDisplayName}</td>
-                  <td className="px-3 py-2 text-foreground/80">{item.offering}</td>
-                  <td className="px-3 py-2 text-foreground/80">{item.status}</td>
-                  <td className="px-3 py-2 text-foreground/80">{item.riskLevel}</td>
-                  <td className="px-3 py-2 text-foreground/80">{item.retentionStatus}</td>
-                  <td className="px-3 py-2 text-foreground/80">{item.openTasks}</td>
-                  <td className="px-3 py-2 text-foreground/80">{item.hasOpenStay ? "Ja" : "Nein"}</td>
+                  <td className="px-3 py-2 text-foreground/88">{item.subjectDisplayName}</td>
+                  <td className="px-3 py-2 text-foreground/86">{item.offering}</td>
+                  <td className="px-3 py-2"><StatusBadge value={item.status} /></td>
+                  <td className="px-3 py-2"><StatusBadge value={item.riskLevel} /></td>
+                  <td className="px-3 py-2"><StatusBadge value={item.retentionStatus} /></td>
+                  <td className="px-3 py-2 text-foreground/86">{item.openTasks}</td>
+                  <td className="px-3 py-2 text-foreground/86">{item.hasOpenStay ? "Ja" : "Nein"}</td>
+                  <td className="px-3 py-2">
+                    <Link href={`/hub/cases/${item.id}`} className="rounded-lg border border-black/12 bg-white px-2.5 py-1.5 text-xs font-semibold text-foreground/88">
+                      Öffnen
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

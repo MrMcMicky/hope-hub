@@ -149,6 +149,7 @@ export type DashboardSnapshot = {
   tasks: Array<{
     id: string;
     title: string;
+    caseId: string;
     caseRef: string;
     owner: string;
     dueAt: string | null;
@@ -3416,7 +3417,7 @@ export async function getDashboardSnapshot(actor: HubActor): Promise<DashboardSn
             status: { not: "DONE" },
           },
           include: {
-            case: { select: { caseRef: true } },
+            case: { select: { id: true, caseRef: true } },
           },
           orderBy: [{ dueAt: "asc" }, { createdAt: "desc" }],
           take: 40,
@@ -3573,6 +3574,7 @@ export async function getDashboardSnapshot(actor: HubActor): Promise<DashboardSn
     tasks: tasks.map((item) => ({
       id: item.id,
       title: item.title,
+      caseId: item.case.id,
       caseRef: item.case.caseRef,
       owner: item.ownerName ?? "Team",
       dueAt: toIso(item.dueAt),

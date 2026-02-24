@@ -25,6 +25,9 @@ test("Dashboard, Billing und Exportseiten sind erreichbar", async ({ page }) => 
 
   await page.goto("/hub/exports");
   await expect(page.getByRole("heading", { name: "Exporte & Compliance" })).toBeVisible();
+
+  await page.goto("/hub/reports");
+  await expect(page.getByRole("heading", { name: "Reports" })).toBeVisible();
 });
 
 test("Fall-Workflow inkl. Billing und Export", async ({ page }) => {

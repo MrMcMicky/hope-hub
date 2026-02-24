@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { createExportRecipientAction, deleteExportRecipientAction, updateExportRecipientAction } from "@/app/hub/actions";
+import { HubNav } from "@/app/hub/_components/hub-nav";
+import { StatusBadge } from "@/app/hub/_components/status-badge";
 import { requireHubActor } from "@/lib/auth/session";
 import { ensureSeedData, listComplianceQueue, listExportQueue, listExportRecipients } from "@/lib/domain/workflows";
 
@@ -32,49 +34,19 @@ export default async function ExportsPage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8 sm:px-10">
       <header className="rounded-3xl border border-black/10 bg-surface/95 p-6 shadow-[0_18px_60px_-26px_rgb(18_22_27/0.38)] sm:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-strong">HOPE Hub</p>
             <h1 className="mt-2 font-display text-3xl leading-tight text-foreground">Exporte & Compliance</h1>
-            <p className="mt-2 text-sm text-foreground/75">Exportpakete, Empfängerverzeichnis und Retention-Warteschlange.</p>
+            <p className="mt-2 text-sm text-foreground/85">Exportpakete, Empfängerverzeichnis und Retention-Warteschlange.</p>
           </div>
-          <div className="flex gap-3">
-            <a
-              href="/api/reports/audit"
-              className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80"
-            >
-              Audit-Report CSV
-            </a>
-            <a
-              href="/api/reports/audit-integrity"
-              className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80"
-            >
-              Audit-Integrity CSV
-            </a>
-            <a
-              href="/api/reports/export-list"
-              className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80"
-            >
-              Export-Liste CSV
-            </a>
-            <a
-              href="/api/reports/open-work"
-              className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80"
-            >
-              Open-Work CSV
-            </a>
-            <Link href="/hub" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
-              Dashboard
-            </Link>
-            <Link href="/hub/cases" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
-              Fälle
-            </Link>
-            <Link href="/hub/billing" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
-              Billing
-            </Link>
-            <Link href="/hub/sync" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
-              Sync
-            </Link>
+          <div className="space-y-2">
+            <HubNav active="exports" />
+            <div className="flex justify-end">
+              <Link href="/hub/reports" className="rounded-xl border border-black/12 bg-white px-4 py-2 text-sm font-semibold text-foreground/88 hover:border-brand/40">
+                Reports öffnen
+              </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -86,7 +58,7 @@ export default async function ExportsPage() {
             {exportsQueue.map((item) => (
               <li key={item.id} className="rounded-xl border border-black/8 px-3 py-2">
                 <p className="font-semibold text-foreground">
-                  {item.exportRef} | {item.status}
+                  {item.exportRef} <span className="ml-2 align-middle"><StatusBadge value={item.status} /></span>
                 </p>
                 <p className="text-foreground/75">
                   {item.caseRef} | {item.subjectDisplayName}
@@ -224,7 +196,7 @@ export default async function ExportsPage() {
                     </Link>
                   </td>
                   <td className="px-3 py-2 text-foreground/80">{item.subjectDisplayName}</td>
-                  <td className="px-3 py-2 text-foreground/80">{item.retentionStatus}</td>
+                  <td className="px-3 py-2"><StatusBadge value={item.retentionStatus} /></td>
                   <td className="px-3 py-2 text-foreground/80">{formatDateTime(item.retentionDueAt)}</td>
                   <td className="px-3 py-2 text-foreground/80">{formatDateTime(item.archivedAt)}</td>
                   <td className="px-3 py-2 text-foreground/80">{formatDateTime(item.scheduledDeletionAt)}</td>

@@ -35,6 +35,7 @@ Next.js App für `hope-hub.online` mit getrennter Dev- und Prod-Umgebung.
   - `/hub/billing` (Billing-Übersicht)
   - `/hub/exports` (Export- und Compliance-Übersicht)
   - `/hub/sync` (Sync-Monitoring und Reconciliation)
+  - `/hub/reports` (zentrale Report-Auswahl)
   - `/hub/cases` (Fallliste + Fallanlage)
   - `/hub/cases/[caseId]` (Fallakte mit Case/Stay/Task/Billing/Export/Compliance)
 - Report-Downloads:

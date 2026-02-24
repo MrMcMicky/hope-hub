@@ -147,6 +147,7 @@ Implementiert in:
 - Billing-Übersicht: `src/app/hub/billing/page.tsx`
 - Export- und Compliance-Übersicht: `src/app/hub/exports/page.tsx`
 - Sync-Monitoring: `src/app/hub/sync/page.tsx`
+- Report-Hub: `src/app/hub/reports/page.tsx`
 - Fallliste + Neuanlage: `src/app/hub/cases/page.tsx`
 - Fallakte mit CRUD für Stay/ServiceEvent/Task/Kostengutsprache/Billing/Export/Compliance: `src/app/hub/cases/[caseId]/page.tsx`
 

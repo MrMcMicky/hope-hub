@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { markSyncEventAppliedAction } from "@/app/hub/actions";
+import { HubNav } from "@/app/hub/_components/hub-nav";
 import { requireHubActor } from "@/lib/auth/session";
 import { ensureSeedData, getSyncQueueSnapshot } from "@/lib/domain/workflows";
 
@@ -27,26 +28,13 @@ export default async function SyncPage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8 sm:px-10">
       <header className="rounded-3xl border border-black/10 bg-surface/95 p-6 shadow-[0_18px_60px_-26px_rgb(18_22_27/0.38)] sm:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-strong">HOPE Hub</p>
             <h1 className="mt-2 font-display text-3xl leading-tight text-foreground">Sync-Monitoring</h1>
-            <p className="mt-2 text-sm text-foreground/75">Offline-Queue, Geräte-Clients und Reconciliation-Status.</p>
+            <p className="mt-2 text-sm text-foreground/85">Offline-Queue, Geräte-Clients und Reconciliation-Status.</p>
           </div>
-          <div className="flex gap-3">
-            <Link href="/hub" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
-              Dashboard
-            </Link>
-            <Link href="/hub/cases" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
-              Fälle
-            </Link>
-            <Link href="/hub/billing" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
-              Billing
-            </Link>
-            <Link href="/hub/exports" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
-              Exporte
-            </Link>
-          </div>
+          <HubNav active="sync" />
         </div>
       </header>
 
