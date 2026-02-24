@@ -23,7 +23,7 @@ Die Regel gilt für:
 - `README.md`
 - `docs/**/*.md`
 - UI- und Microcopy-Texte in `src/app/**`
-- Seed-/Demo-Texte in `src/lib/prototype/**`
+- Seed-/Demo-Texte in `src/lib/domain/**`
 
 ## Ausnahmen
 
@@ -46,7 +46,7 @@ rg -n --hidden \
   --glob '!.next' \
   --glob '!package-lock.json*' \
   -e '\b\w*(ae|oe|ue)\w*\b' \
-  README.md docs src/app src/lib/prototype
+  README.md docs src/app src/lib/domain
 ```
 
 Wenn der Treffer ein deutscher Fliesstext ist: auf echte Umlaute korrigieren.

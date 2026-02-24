@@ -22,20 +22,50 @@ Next.js App für `hope-hub.online` mit getrennter Dev- und Prod-Umgebung.
   - Fallführung (Case CRUD)
   - Aufenthalt (Check-in / Check-out)
   - Service-Events
+    - inkl. Update/Löschen (voller CRUD)
   - Tasks inkl. Statuswechsel
+  - Kostengutsprache (inkl. Statusfluss und Verknüpfung mit Billing)
+  - Billing (InvoiceDraft + InvoiceLine)
+  - Export (ExportRecipient + ExportPackage)
+    - Empfängerverwaltung inkl. Update/Löschen
+  - Compliance (Retention-Review, Archivierung, Löschplanung)
   - Persistenter Audit-Trail (append-only + Hash-Chain)
 - UI-Routen:
   - `/hub` (Dashboard)
+  - `/hub/billing` (Billing-Übersicht)
+  - `/hub/exports` (Export- und Compliance-Übersicht)
+  - `/hub/sync` (Sync-Monitoring und Reconciliation)
   - `/hub/cases` (Fallliste + Fallanlage)
-  - `/hub/cases/[caseId]` (Fallakte mit Workflows)
+  - `/hub/cases/[caseId]` (Fallakte mit Case/Stay/Task/Billing/Export/Compliance)
+- Report-Downloads:
+  - `/api/reports/billing-journal` (CSV)
+  - `/api/reports/audit` (CSV)
+  - `/api/reports/audit-integrity` (CSV)
+  - `/api/reports/occupancy` (CSV)
+  - `/api/reports/open-work` (CSV)
+  - `/api/reports/export-list` (CSV)
+- Sicherer Export-Download:
+  - `/api/exports/[exportId]/download` (verschlüsseltes Paket, Audit-Event bei Download)
 - Sales-Frontpage für Erstgespräche:
-  - `/` (Nutzenargumentation, Demo-Ablauf, HOPE-Struktur, nächste Ausbauschritte)
+  - `/` (Nutzenargumentation, Demo-Ablauf, HOPE-Struktur, aktueller Ausbaustand)
 
 ## Lokal entwickeln
 
 ```bash
 npm install
 npm run dev
+```
+
+## Tests
+
+```bash
+# Typecheck und Lint
+npm run type-check
+npm run lint
+
+# E2E (Playwright, setzt gebaute App voraus)
+npm run build
+npm run test:e2e
 ```
 
 ## Datenbank (Prisma Bootstrap)
@@ -53,6 +83,18 @@ npm run db:migrate:deploy
 # Migrationsstatus prüfen
 npm run db:migrate:status
 ```
+
+## RLS Policies (SQL)
+
+```bash
+# RLS-Baseline auf aktuelle Datenbank anwenden
+./scripts/apply-rls-policies.sh
+```
+
+Referenzen:
+
+- `prisma/policies/001_rls_templates.sql`
+- `prisma/policies/002_rls_baseline.sql`
 
 ## OIDC Login (Authentik)
 
@@ -73,6 +115,7 @@ Routen:
 
 Hinweis:
 - `/api/sync` nutzt Session-basierte Actor-Daten (`id`, `roles`, optionale `assignmentCaseIds`) aus OIDC Claims.
+- Sync-Batches werden persistent in `SyncClient` und `SyncEvent` gespeichert und pro Fall auditiert.
 
 ## Demo Login (Prototype)
 

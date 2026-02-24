@@ -10,6 +10,8 @@
     "start:prod": "next start -H 0.0.0.0 -p 8014",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
+    "test:e2e": "bash -lc 'set -a; source .env.local; set +a; playwright test'",
+    "test:e2e:headed": "bash -lc 'set -a; source .env.local; set +a; playwright test --headed'",
     "db:generate": "prisma generate",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
@@ -23,6 +25,7 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

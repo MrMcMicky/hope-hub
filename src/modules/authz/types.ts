@@ -11,7 +11,9 @@ export type AuthzAction =
   | "case:read"
   | "case:update"
   | "audit:append"
-  | "export:create";
+  | "export:create"
+  | "billing:write"
+  | "compliance:write";
 
 export type AuthzResource = {
   caseId?: string;

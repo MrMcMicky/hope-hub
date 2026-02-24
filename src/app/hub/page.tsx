@@ -24,6 +24,14 @@ function formatRelativeTime(iso: string | null): string {
   return `${hours}h`;
 }
 
+function formatMoney(cents: number): string {
+  return new Intl.NumberFormat("de-CH", {
+    style: "currency",
+    currency: "CHF",
+    minimumFractionDigits: 2,
+  }).format(cents / 100);
+}
+
 export const metadata = {
   title: "HOPE Hub Operations",
 };
@@ -48,6 +56,21 @@ export default async function HubPage() {
             <Link href="/hub/cases" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
               Fälle verwalten
             </Link>
+            <Link href="/hub/billing" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
+              Billing
+            </Link>
+            <Link href="/hub/exports" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
+              Exporte
+            </Link>
+            <Link href="/hub/sync" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
+              Sync
+            </Link>
+            <a href="/api/reports/occupancy" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
+              Belegung CSV
+            </a>
+            <a href="/api/reports/open-work" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
+              Open-Work CSV
+            </a>
             <Link href="/" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
               Landing
             </Link>
@@ -58,7 +81,7 @@ export default async function HubPage() {
         </div>
       </header>
 
-      <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-10">
         <article className="rounded-2xl border border-black/8 bg-white p-4">
           <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">Aktive Fälle</p>
           <p className="mt-2 text-3xl font-semibold text-foreground">{snapshot.kpis.activeCases}</p>
@@ -72,12 +95,32 @@ export default async function HubPage() {
           <p className="mt-2 text-3xl font-semibold text-foreground">{snapshot.kpis.highRiskCases}</p>
         </article>
         <article className="rounded-2xl border border-black/8 bg-white p-4">
-          <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">Sync Queue</p>
+          <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">Sync-Warteschlange</p>
           <p className="mt-2 text-3xl font-semibold text-foreground">{snapshot.kpis.pendingSyncEvents}</p>
         </article>
         <article className="rounded-2xl border border-black/8 bg-white p-4">
           <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">Belegung</p>
           <p className="mt-2 text-3xl font-semibold text-foreground">{snapshot.kpis.occupancyRate}%</p>
+        </article>
+        <article className="rounded-2xl border border-black/8 bg-white p-4">
+          <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">Billing Drafts</p>
+          <p className="mt-2 text-3xl font-semibold text-foreground">{snapshot.kpis.billingDrafts}</p>
+        </article>
+        <article className="rounded-2xl border border-black/8 bg-white p-4">
+          <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">Pending Exports</p>
+          <p className="mt-2 text-3xl font-semibold text-foreground">{snapshot.kpis.pendingExports}</p>
+        </article>
+        <article className="rounded-2xl border border-black/8 bg-white p-4">
+          <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">Retention fällig</p>
+          <p className="mt-2 text-3xl font-semibold text-foreground">{snapshot.kpis.retentionDueCases}</p>
+        </article>
+        <article className="rounded-2xl border border-black/8 bg-white p-4">
+          <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">Kostengutsprachen offen</p>
+          <p className="mt-2 text-3xl font-semibold text-foreground">{snapshot.kpis.pendingCostApprovals}</p>
+        </article>
+        <article className="rounded-2xl border border-black/8 bg-white p-4">
+          <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">Open Work total</p>
+          <p className="mt-2 text-3xl font-semibold text-foreground">{snapshot.kpis.openWorkItems}</p>
         </article>
       </section>
 
@@ -185,9 +228,60 @@ export default async function HubPage() {
                   {task.priority} | {task.title}
                 </p>
                 <p className="text-foreground/75">
-                  {task.caseRef} | {task.owner} | due {formatDateTime(task.dueAt)}
+                  {task.caseRef} | {task.owner} | fällig {formatDateTime(task.dueAt)}
                 </p>
                 <p className="text-foreground/70">Status: {task.status}</p>
+              </li>
+            ))}
+          </ul>
+        </article>
+      </section>
+
+      <section className="mt-6 grid gap-4 lg:grid-cols-3">
+        <article className="rounded-2xl border border-black/8 bg-white p-5">
+          <h2 className="text-lg font-semibold text-foreground">Billing-Warteschlange</h2>
+          <ul className="mt-4 space-y-2 text-sm">
+            {snapshot.invoiceQueue.map((invoice) => (
+              <li key={invoice.id} className="rounded-xl border border-black/8 px-3 py-2">
+                <p className="font-semibold text-foreground">
+                  {invoice.invoiceRef} | {invoice.status}
+                </p>
+                <p className="text-foreground/75">
+                  {invoice.caseRef} | {formatMoney(invoice.totalCents)}
+                </p>
+                <p className="text-foreground/70">Update {formatDateTime(invoice.updatedAt)}</p>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="rounded-2xl border border-black/8 bg-white p-5">
+          <h2 className="text-lg font-semibold text-foreground">Export-Warteschlange</h2>
+          <ul className="mt-4 space-y-2 text-sm">
+            {snapshot.exportQueue.map((item) => (
+              <li key={item.id} className="rounded-xl border border-black/8 px-3 py-2">
+                <p className="font-semibold text-foreground">
+                  {item.exportRef} | {item.status}
+                </p>
+                <p className="text-foreground/75">
+                  {item.caseRef} | {item.recipient}
+                </p>
+                <p className="text-foreground/70">Update {formatDateTime(item.updatedAt)}</p>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="rounded-2xl border border-black/8 bg-white p-5">
+          <h2 className="text-lg font-semibold text-foreground">Compliance-Warteschlange</h2>
+          <ul className="mt-4 space-y-2 text-sm">
+            {snapshot.complianceQueue.map((item) => (
+              <li key={item.id} className="rounded-xl border border-black/8 px-3 py-2">
+                <p className="font-semibold text-foreground">
+                  {item.caseRef} | {item.retentionStatus}
+                </p>
+                <p className="text-foreground/75">{item.subjectDisplayName}</p>
+                <p className="text-foreground/70">Fällig {formatDateTime(item.retentionDueAt)}</p>
               </li>
             ))}
           </ul>

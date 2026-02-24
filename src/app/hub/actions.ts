@@ -1,19 +1,49 @@
 "use server";
 
-import { type CaseStatus, type DataClass, type LegalBasis, type ProgramArea, type RiskLevel, type SharePolicy, type TaskPriority, type TaskStatus } from "@prisma/client";
+import {
+  type CaseStatus,
+  type CostApprovalStatus,
+  type DataClass,
+  type ExportPackageStatus,
+  type InvoiceStatus,
+  type LegalBasis,
+  type ProgramArea,
+  type RiskLevel,
+  type SharePolicy,
+  type TaskPriority,
+  type TaskStatus,
+} from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireHubActor } from "@/lib/auth/session";
 import {
   WorkflowError,
+  addInvoiceLineWorkflow,
+  archiveCaseWorkflow,
   checkOutStayWorkflow,
   createCaseWorkflow,
+  createExportPackageWorkflow,
+  createExportRecipientWorkflow,
+  createInvoiceDraftWorkflow,
+  createCostApprovalWorkflow,
   createServiceEventWorkflow,
   createStayWorkflow,
   createTaskWorkflow,
+  deleteCostApprovalWorkflow,
+  deleteExportRecipientWorkflow,
+  deleteServiceEventWorkflow,
   deleteTaskWorkflow,
+  markSyncEventAppliedWorkflow,
+  runRetentionReviewWorkflow,
+  scheduleCaseDeletionWorkflow,
   updateCaseWorkflow,
+  updateCostApprovalStatusWorkflow,
+  updateCostApprovalWorkflow,
+  updateExportRecipientWorkflow,
+  updateExportStatusWorkflow,
+  updateInvoiceStatusWorkflow,
+  updateServiceEventWorkflow,
   updateTaskStatusWorkflow,
 } from "@/lib/domain/workflows";
 
@@ -82,6 +112,41 @@ function asTaskStatus(value: string): TaskStatus {
     return value as TaskStatus;
   }
   return "OPEN";
+}
+
+function asInvoiceStatus(value: string): InvoiceStatus {
+  if (["DRAFT", "READY", "SUBMITTED", "PAID", "CANCELLED"].includes(value)) {
+    return value as InvoiceStatus;
+  }
+  return "DRAFT";
+}
+
+function asExportStatus(value: string): ExportPackageStatus {
+  if (["DRAFT", "READY", "RELEASED", "CANCELLED"].includes(value)) {
+    return value as ExportPackageStatus;
+  }
+  return "DRAFT";
+}
+
+function asCostApprovalStatus(value: string): CostApprovalStatus {
+  if (["DRAFT", "SUBMITTED", "APPROVED", "REJECTED", "EXPIRED", "CANCELLED"].includes(value)) {
+    return value as CostApprovalStatus;
+  }
+  return "DRAFT";
+}
+
+function asInteger(formData: FormData, key: string, fallback: number): number {
+  const value = asNonEmptyString(formData, key);
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.round(parsed);
+}
+
+function asOptionalNumber(formData: FormData, key: string): number | undefined {
+  const value = asNonEmptyString(formData, key);
+  if (!value) return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 function asBoolean(formData: FormData, key: string): boolean {
@@ -202,6 +267,42 @@ export async function createServiceEventAction(caseId: string, formData: FormDat
   }
 }
 
+export async function updateServiceEventAction(caseId: string, serviceEventId: string, formData: FormData): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await updateServiceEventWorkflow(actor, {
+      caseId,
+      serviceEventId,
+      stayId: asOptionalString(formData, "stayId"),
+      eventType: asNonEmptyString(formData, "eventType"),
+      occurredAt: asOptionalString(formData, "occurredAt"),
+      notes: asOptionalString(formData, "notes"),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function deleteServiceEventAction(caseId: string, serviceEventId: string): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await deleteServiceEventWorkflow(actor, {
+      caseId,
+      serviceEventId,
+    });
+
+    revalidatePath("/hub");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
 export async function createTaskAction(caseId: string, formData: FormData): Promise<void> {
   const actor = await requireHubActor(`/hub/cases/${caseId}`);
 
@@ -250,6 +351,302 @@ export async function deleteTaskAction(caseId: string, taskId: string): Promise<
 
     revalidatePath("/hub");
     revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function createCostApprovalAction(caseId: string, formData: FormData): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await createCostApprovalWorkflow(actor, {
+      caseId,
+      authorityName: asNonEmptyString(formData, "authorityName"),
+      approvedAmountCents: asInteger(formData, "approvedAmountCents", 0),
+      currency: asOptionalString(formData, "currency"),
+      validFrom: asOptionalString(formData, "validFrom"),
+      validUntil: asOptionalString(formData, "validUntil"),
+      notes: asOptionalString(formData, "notes"),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/billing");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function updateCostApprovalAction(caseId: string, costApprovalId: string, formData: FormData): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await updateCostApprovalWorkflow(actor, {
+      caseId,
+      costApprovalId,
+      authorityName: asNonEmptyString(formData, "authorityName"),
+      approvedAmountCents: asInteger(formData, "approvedAmountCents", 0),
+      currency: asOptionalString(formData, "currency"),
+      validFrom: asNonEmptyString(formData, "validFrom"),
+      validUntil: asNonEmptyString(formData, "validUntil"),
+      notes: asOptionalString(formData, "notes"),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/billing");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function updateCostApprovalStatusAction(caseId: string, costApprovalId: string, formData: FormData): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await updateCostApprovalStatusWorkflow(actor, {
+      caseId,
+      costApprovalId,
+      status: asCostApprovalStatus(asNonEmptyString(formData, "status")),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/billing");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function deleteCostApprovalAction(caseId: string, costApprovalId: string): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await deleteCostApprovalWorkflow(actor, {
+      caseId,
+      costApprovalId,
+    });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/billing");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function createInvoiceDraftAction(caseId: string, formData: FormData): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await createInvoiceDraftWorkflow(actor, {
+      caseId,
+      periodStart: asOptionalString(formData, "periodStart"),
+      periodEnd: asOptionalString(formData, "periodEnd"),
+      notes: asOptionalString(formData, "notes"),
+      taxRatePercent: asOptionalNumber(formData, "taxRatePercent"),
+      costApprovalId: asOptionalString(formData, "costApprovalId"),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/billing");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function addInvoiceLineAction(caseId: string, invoiceId: string, formData: FormData): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await addInvoiceLineWorkflow(actor, {
+      caseId,
+      invoiceId,
+      description: asNonEmptyString(formData, "description"),
+      quantity: asInteger(formData, "quantity", 1),
+      unitPriceCents: asInteger(formData, "unitPriceCents", 0),
+      occurredAt: asOptionalString(formData, "occurredAt"),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/billing");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function updateInvoiceStatusAction(caseId: string, invoiceId: string, formData: FormData): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await updateInvoiceStatusWorkflow(actor, {
+      caseId,
+      invoiceId,
+      status: asInvoiceStatus(asNonEmptyString(formData, "status")),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/billing");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function createExportRecipientAction(formData: FormData): Promise<void> {
+  const actor = await requireHubActor("/hub/exports");
+
+  try {
+    await createExportRecipientWorkflow(actor, {
+      label: asNonEmptyString(formData, "label"),
+      organisation: asOptionalString(formData, "organisation"),
+      channel: asOptionalString(formData, "channel"),
+      endpoint: asOptionalString(formData, "endpoint"),
+      authorityApproved: asBoolean(formData, "authorityApproved"),
+      keyFingerprint: asOptionalString(formData, "keyFingerprint"),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/exports");
+    revalidatePath("/hub/cases");
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function updateExportRecipientAction(recipientId: string, formData: FormData): Promise<void> {
+  const actor = await requireHubActor("/hub/exports");
+
+  try {
+    await updateExportRecipientWorkflow(actor, {
+      recipientId,
+      label: asNonEmptyString(formData, "label"),
+      organisation: asOptionalString(formData, "organisation"),
+      channel: asOptionalString(formData, "channel"),
+      endpoint: asOptionalString(formData, "endpoint"),
+      authorityApproved: asBoolean(formData, "authorityApproved"),
+      keyFingerprint: asOptionalString(formData, "keyFingerprint"),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/exports");
+    revalidatePath("/hub/cases");
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function deleteExportRecipientAction(recipientId: string): Promise<void> {
+  const actor = await requireHubActor("/hub/exports");
+
+  try {
+    await deleteExportRecipientWorkflow(actor, {
+      recipientId,
+    });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/exports");
+    revalidatePath("/hub/cases");
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function createExportPackageAction(caseId: string, formData: FormData): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await createExportPackageWorkflow(actor, {
+      caseId,
+      recipientId: asNonEmptyString(formData, "recipientId"),
+      payloadType: asOptionalString(formData, "payloadType"),
+      purpose: asOptionalString(formData, "purpose"),
+      expiresAt: asOptionalString(formData, "expiresAt"),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/exports");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function updateExportStatusAction(caseId: string, exportId: string, formData: FormData): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await updateExportStatusWorkflow(actor, {
+      caseId,
+      exportId,
+      status: asExportStatus(asNonEmptyString(formData, "status")),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/exports");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function runRetentionReviewAction(caseId: string): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await runRetentionReviewWorkflow(actor, { caseId });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/exports");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function archiveCaseAction(caseId: string, formData: FormData): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await archiveCaseWorkflow(actor, {
+      caseId,
+      archivedAt: asOptionalString(formData, "archivedAt"),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function scheduleCaseDeletionAction(caseId: string, formData: FormData): Promise<void> {
+  const actor = await requireHubActor(`/hub/cases/${caseId}`);
+
+  try {
+    await scheduleCaseDeletionWorkflow(actor, {
+      caseId,
+      scheduledDeletionAt: asOptionalString(formData, "scheduledDeletionAt"),
+    });
+
+    revalidatePath("/hub");
+    revalidatePath(`/hub/cases/${caseId}`);
+  } catch (error) {
+    throwIfWorkflowError(error);
+  }
+}
+
+export async function markSyncEventAppliedAction(syncEventId: string): Promise<void> {
+  const actor = await requireHubActor("/hub/sync");
+
+  try {
+    await markSyncEventAppliedWorkflow(actor, { syncEventId });
+
+    revalidatePath("/hub");
+    revalidatePath("/hub/sync");
   } catch (error) {
     throwIfWorkflowError(error);
   }

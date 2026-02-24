@@ -1,12 +1,12 @@
 import type { ActorRole, AuthzAction, AuthzContext, AuthzDecision } from "./types";
 
 const ROLE_PERMISSIONS: Record<ActorRole, Set<AuthzAction>> = {
-  ADMIN: new Set(["sync:append", "case:read", "case:update", "audit:append", "export:create"]),
-  SHIFT_LEAD: new Set(["sync:append", "case:read", "case:update", "audit:append"]),
+  ADMIN: new Set(["sync:append", "case:read", "case:update", "audit:append", "export:create", "billing:write", "compliance:write"]),
+  SHIFT_LEAD: new Set(["sync:append", "case:read", "case:update", "audit:append", "billing:write", "compliance:write"]),
   SHIFT_WORKER: new Set(["sync:append", "case:read", "audit:append"]),
-  AUDITOR: new Set(["case:read"]),
-  BILLING: new Set(["case:read", "export:create"]),
-  SYSTEM: new Set(["sync:append", "case:read", "case:update", "audit:append", "export:create"]),
+  AUDITOR: new Set(["case:read", "compliance:write"]),
+  BILLING: new Set(["case:read", "export:create", "billing:write"]),
+  SYSTEM: new Set(["sync:append", "case:read", "case:update", "audit:append", "export:create", "billing:write", "compliance:write"]),
 };
 
 function hasRolePermission(roles: ActorRole[], action: AuthzAction): boolean {

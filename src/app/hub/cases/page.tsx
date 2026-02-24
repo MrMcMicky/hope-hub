@@ -48,6 +48,15 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
             <Link href="/hub" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
               Dashboard
             </Link>
+            <Link href="/hub/billing" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
+              Billing
+            </Link>
+            <Link href="/hub/exports" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
+              Exporte
+            </Link>
+            <Link href="/hub/sync" className="rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-foreground/80">
+              Sync
+            </Link>
           </div>
         </div>
       </header>
@@ -220,6 +229,7 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
                 <th className="px-3 py-2">Angebot</th>
                 <th className="px-3 py-2">Status</th>
                 <th className="px-3 py-2">Risiko</th>
+                <th className="px-3 py-2">Retention</th>
                 <th className="px-3 py-2">Open Tasks</th>
                 <th className="px-3 py-2">Open Stay</th>
               </tr>
@@ -236,6 +246,7 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
                   <td className="px-3 py-2 text-foreground/80">{item.offering}</td>
                   <td className="px-3 py-2 text-foreground/80">{item.status}</td>
                   <td className="px-3 py-2 text-foreground/80">{item.riskLevel}</td>
+                  <td className="px-3 py-2 text-foreground/80">{item.retentionStatus}</td>
                   <td className="px-3 py-2 text-foreground/80">{item.openTasks}</td>
                   <td className="px-3 py-2 text-foreground/80">{item.hasOpenStay ? "Ja" : "Nein"}</td>
                 </tr>

@@ -8,26 +8,26 @@ export default function Home() {
     },
     {
       title: "Operative Workflows",
-      text: "Check-in, Check-out, Service-Events und Task-Steuerung laufen als echte CRUD-Prozesse.",
+      text: "Check-in, Check-out, Service-Events, Billing und Export laufen als persistente CRUD-Prozesse.",
     },
     {
-      title: "Audit und Nachvollziehbarkeit",
-      text: "Änderungen werden append-only mit Hash-Chain protokolliert und bleiben nachprüfbar.",
+      title: "Compliance und Nachvollziehbarkeit",
+      text: "Retention, Legal Hold und Audit-Trail sind in den Kernabläufen verankert.",
     },
   ];
 
   const areas = [
     {
       title: "Begegnung",
-      items: "Lebensmittelabgabe",
+      items: "Öffentliches Restaurant, Lebensmittelabgabe, Streetwork",
     },
     {
       title: "Betreuen",
-      items: "Soziale Beratungsstelle",
+      items: "Soziale Beratungsstelle, Wohnbegleitung / Umzugsbegleitung",
     },
     {
       title: "Beherbergen",
-      items: "Notschlafstelle, Notpension, Übergangswohnen",
+      items: "Notschlafstelle, Notpension, Übergangswohnen, Wohnzentrum, Wohnexternat",
     },
     {
       title: "Beschäftigen",
@@ -39,8 +39,8 @@ export default function Home() {
     "Login als Super Admin",
     "Neuen Fall erfassen oder bestehende Akte öffnen",
     "Aufenthalt und Service-Event dokumentieren",
-    "Tasks erstellen, priorisieren und Status setzen",
-    "Audit-Trail und Kennzahlen live zeigen",
+    "Rechnungsentwurf erzeugen und Exportpaket freigeben",
+    "Compliance-Status und Kennzahlen live zeigen",
   ];
 
   return (
@@ -77,7 +77,7 @@ export default function Home() {
           </div>
           <div className="rounded-2xl border border-black/8 bg-white/85 px-4 py-3 text-sm">
             <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">CRUD Workflows</p>
-            <p className="mt-1 text-xl font-semibold text-foreground">Case | Stay | Task</p>
+            <p className="mt-1 text-xl font-semibold text-foreground">Case | Stay | Task | Billing | Export</p>
           </div>
           <div className="rounded-2xl border border-black/8 bg-white/85 px-4 py-3 text-sm">
             <p className="text-xs uppercase tracking-[0.14em] text-foreground/60">Audit Trail</p>
@@ -102,6 +102,9 @@ export default function Home() {
           </Link>
           <Link href="/hub/cases" className="rounded-full border border-black/15 bg-white px-6 py-2.5 text-sm font-semibold text-foreground/85">
             Fallführung zeigen
+          </Link>
+          <Link href="/hub/exports" className="rounded-full border border-black/15 bg-white px-6 py-2.5 text-sm font-semibold text-foreground/85">
+            Export & Compliance zeigen
           </Link>
         </div>
       </section>
@@ -148,17 +151,18 @@ export default function Home() {
         </article>
 
         <article className="rounded-2xl border border-black/8 bg-white p-6">
-          <h2 className="font-display text-2xl text-foreground">Nächste Schritte ab heute</h2>
+          <h2 className="font-display text-2xl text-foreground">Aktueller Ausbaustand</h2>
           <div className="mt-4 space-y-3 text-sm text-foreground/82">
             <p className="rounded-xl border border-black/8 bg-surface/85 px-4 py-3">
-              <strong>1. Billing und Export:</strong> Invoice-Drafts, verschlüsselte Exportpakete und Freigabeprozess
-              pro Fall.
+              <strong>1. Billing und Export:</strong> Rechnungsentwürfe mit Positionen sowie verschlüsselte Exportpakete
+              inkl. Statusfluss sind live.
             </p>
             <p className="rounded-xl border border-black/8 bg-surface/85 px-4 py-3">
-              <strong>2. Compliance-Härtung:</strong> RLS-Policies, Retention Engine, Legal-Hold-Flows und Prüfpfade.
+              <strong>2. Compliance:</strong> Retention-Review, Archivierung, Löschplanung und Legal-Hold-Guardrails sind
+              im Workflow verankert.
             </p>
             <p className="rounded-xl border border-black/8 bg-surface/85 px-4 py-3">
-              <strong>3. Verifikation:</strong> E2E-Tests für Login, Fallprozesse und kritische Zustandswechsel.
+              <strong>3. Verifikation:</strong> E2E-Teststrecke für Login, Fallführung, Billing und Export ist integriert.
             </p>
           </div>
           <div className="mt-5 rounded-xl border border-dashed border-brand/35 bg-brand/8 px-4 py-3 text-sm text-foreground/80">

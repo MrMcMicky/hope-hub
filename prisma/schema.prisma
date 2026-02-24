@@ -77,6 +77,44 @@ enum TaskStatus {
   DONE
 }
 
+enum InvoiceStatus {
+  DRAFT
+  READY
+  SUBMITTED
+  PAID
+  CANCELLED
+}
+
+enum InvoiceLineSource {
+  STAY
+  SERVICE_EVENT
+  COST_APPROVAL
+  MANUAL
+}
+
+enum CostApprovalStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  EXPIRED
+  CANCELLED
+}
+
+enum ExportPackageStatus {
+  DRAFT
+  READY
+  RELEASED
+  CANCELLED
+}
+
+enum RetentionStatus {
+  ACTIVE
+  DUE
+  ARCHIVED
+  DELETION_SCHEDULED
+}
+
 enum AuditAction {
   CREATE
   UPDATE
@@ -104,40 +142,55 @@ model User {
   serviceEventsCreated ServiceEvent[]   @relation("ServiceEventCreator")
   tasksCreated         Task[]           @relation("TaskCreator")
   syncClients          SyncClient[]
+  invoicesCreated      InvoiceDraft[]   @relation("InvoiceCreator")
+  exportsCreated       ExportPackage[]  @relation("ExportPackageCreator")
+  costApprovalsCreated CostApproval[]   @relation("CostApprovalCreator")
 }
 
 model Case {
-  id                 String      @id @default(cuid())
-  caseRef            String      @unique
-  subjectDisplayName String
-  status             CaseStatus  @default(INTAKE)
-  riskLevel          RiskLevel   @default(MEDIUM)
-  programArea        ProgramArea
-  offering           String
-  assignedTeam       String?
-  nextActionAt       DateTime?
-  intakeAt           DateTime    @default(now())
-  dataClass          DataClass
-  purpose            String
-  legalBasis         LegalBasis
-  sharePolicy        SharePolicy
-  retentionRule      String
-  legalHold          Boolean     @default(false)
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
+  id                  String          @id @default(cuid())
+  caseRef             String          @unique
+  subjectDisplayName  String
+  status              CaseStatus      @default(INTAKE)
+  riskLevel           RiskLevel       @default(MEDIUM)
+  programArea         ProgramArea
+  offering            String
+  assignedTeam        String?
+  nextActionAt        DateTime?
+  intakeAt            DateTime        @default(now())
+  dataClass           DataClass
+  purpose             String
+  legalBasis          LegalBasis
+  sharePolicy         SharePolicy
+  retentionRule       String
+  legalHold           Boolean         @default(false)
+  retentionDueAt      DateTime?
+  retentionStatus     RetentionStatus @default(ACTIVE)
+  retentionLastCheck  DateTime?
+  archivedAt          DateTime?
+  scheduledDeletionAt DateTime?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
 
-  stays         Stay[]
-  serviceEvents ServiceEvent[]
-  tasks         Task[]
-  documents     DocumentMeta[]
-  auditEvents   AuditEvent[]
-  assignments   CaseAssignment[]
-  syncEvents    SyncEvent[]
+  stays          Stay[]
+  serviceEvents  ServiceEvent[]
+  tasks          Task[]
+  costApprovals  CostApproval[]
+  invoices       InvoiceDraft[]
+  invoiceLines   InvoiceLine[]
+  exportPackages ExportPackage[]
+  documents      DocumentMeta[]
+  auditEvents    AuditEvent[]
+  assignments    CaseAssignment[]
+  syncEvents     SyncEvent[]
 
   @@index([status])
   @@index([programArea])
   @@index([dataClass])
   @@index([legalHold])
+  @@index([retentionStatus])
+  @@index([retentionDueAt])
+  @@index([scheduledDeletionAt])
 }
 
 model CaseAssignment {
@@ -214,6 +267,122 @@ model Task {
   createdBy User? @relation("TaskCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([caseId, status, dueAt])
+}
+
+model InvoiceDraft {
+  id            String        @id @default(cuid())
+  caseId        String
+  invoiceRef    String        @unique
+  periodStart   DateTime
+  periodEnd     DateTime
+  status        InvoiceStatus @default(DRAFT)
+  currency      String        @default("CHF")
+  subtotalCents Int           @default(0)
+  taxCents      Int           @default(0)
+  totalCents    Int           @default(0)
+  notes         String?
+  costApprovalId String?
+  createdById   String?
+  issuedAt      DateTime?
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  case         Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  costApproval CostApproval? @relation(fields: [costApprovalId], references: [id], onDelete: SetNull)
+  createdBy    User?         @relation("InvoiceCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  lines        InvoiceLine[]
+
+  @@index([caseId, status, updatedAt])
+  @@index([costApprovalId])
+}
+
+model CostApproval {
+  id                  String             @id @default(cuid())
+  caseId              String
+  approvalRef         String             @unique
+  authorityName       String
+  approvedAmountCents Int
+  currency            String             @default("CHF")
+  validFrom           DateTime
+  validUntil          DateTime
+  status              CostApprovalStatus @default(DRAFT)
+  notes               String?
+  createdById         String?
+  submittedAt         DateTime?
+  approvedAt          DateTime?
+  rejectedAt          DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  case      Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  createdBy User?         @relation("CostApprovalCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  invoices  InvoiceDraft[]
+
+  @@index([caseId, status, validUntil])
+}
+
+model InvoiceLine {
+  id             String            @id @default(cuid())
+  invoiceDraftId String
+  caseId         String
+  sourceType     InvoiceLineSource
+  sourceId       String?
+  description    String
+  quantity       Int               @default(1)
+  unitPriceCents Int
+  lineTotalCents Int
+  occurredAt     DateTime?
+  createdAt      DateTime          @default(now())
+
+  invoiceDraft InvoiceDraft @relation(fields: [invoiceDraftId], references: [id], onDelete: Cascade)
+  case         Case         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceDraftId, createdAt])
+  @@index([caseId, sourceType])
+}
+
+model ExportRecipient {
+  id                String   @id @default(cuid())
+  recipientRef      String   @unique
+  label             String
+  organisation      String?
+  channel           String   @default("sftp")
+  endpoint          String?
+  authorityApproved Boolean  @default(false)
+  keyFingerprint    String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  packages ExportPackage[]
+
+  @@index([authorityApproved])
+}
+
+model ExportPackage {
+  id          String              @id @default(cuid())
+  caseId      String
+  exportRef   String              @unique
+  recipientId String
+  status      ExportPackageStatus @default(DRAFT)
+  payloadType String              @default("case_bundle")
+  encrypted   Boolean             @default(true)
+  purpose     String
+  legalBasis  LegalBasis
+  sharePolicy SharePolicy
+  payloadHash String?
+  expiresAt   DateTime?
+  releasedAt  DateTime?
+  createdById String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  case      Case            @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  recipient ExportRecipient @relation(fields: [recipientId], references: [id], onDelete: Restrict)
+  createdBy User?           @relation("ExportPackageCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([caseId, status, updatedAt])
+  @@index([recipientId, status])
 }
 
 model DocumentMeta {

@@ -19,16 +19,24 @@ Quellen:
 
 Operative Angebotsbausteine (Auszug):
 
+- Öffentliches Restaurant
+- Streetwork
 - Lebensmittelabgabe
 - Soziale Beratungsstelle
-- Notschlafstelle und Notpension
-- Tagesstruktur / Beschäftigung
+- Wohnbegleitung / Umzugsbegleitung
+- Notschlafstelle, Notpension, Wohnzentrum, Wohnexternat
+- Tagesstruktur und Arbeitsintegration
 
 Quellen:
 
+- https://www.hope-baden.ch/streetwork/
 - https://www.hope-baden.ch/lebensmittelabgabe/
 - https://www.hope-baden.ch/soziale-beratungsstelle/
 - https://www.hope-baden.ch/notschlafstelle-and-notpension/
+- https://www.hope-baden.ch/wohnzentrum/
+- https://www.hope-baden.ch/wohnexternat/
+- https://www.hope-baden.ch/wohnbegleitung-und-umzugsbegleitung/
+- https://www.hope-baden.ch/tagesstruktur/
 
 Zusätzliche Grössenordnungen aus Jahresbericht (zur realistischen Seed-Kalibrierung):
 
@@ -45,10 +53,10 @@ Quelle:
 
 Die Organisation wird im Produkt über `programArea` + `offering` modelliert:
 
-- `BEGEGNUNG` -> Lebensmittelabgabe
-- `BETREUEN` -> Soziale Beratungsstelle
-- `BEHERBERGEN` -> Notschlafstelle, Notpension, Übergangswohnen
-- `BESCHAEFTIGEN` -> Tagesstruktur / Beschäftigung
+- `BEGEGNUNG` -> Öffentliches Restaurant, Lebensmittelabgabe, Streetwork
+- `BETREUEN` -> Soziale Beratungsstelle, Wohnbegleitung / Umzugsbegleitung
+- `BEHERBERGEN` -> Notschlafstelle, Notpension, Übergangswohnen, Wohnzentrum, Wohnexternat
+- `BESCHAEFTIGEN` -> Tagesstruktur / Beschäftigung, Arbeitsintegration
 
 Implementiert in:
 
@@ -72,6 +80,7 @@ Implementiert in:
 
 - Dokumentation von Interaktionen und Leistungen
 - Optionaler Bezug zu einem Aufenthalt
+- Voller CRUD (Create/Update/Delete) mit Audit-Ereignissen
 
 ### 3.4 Aufgabensteuerung (Task)
 
@@ -84,6 +93,49 @@ Implementiert in:
 - Append-only Audit pro Fall mit Hash-Chain
 - Ereignisse für Create/Update/Delete werden persistent gespeichert
 
+### 3.6 Billing (InvoiceDraft / InvoiceLine)
+
+- Rechnungsentwurf pro Fall und Zeitraum
+- Automatische Positionen aus Aufenthalten und Service-Ereignissen
+- Verknüpfung mit genehmigter Kostengutsprache inkl. Deckelungs-Logik
+- Manuelle Positionen und Statusfluss (`DRAFT`, `READY`, `SUBMITTED`, `PAID`, `CANCELLED`)
+
+### 3.7 Kostengutsprache (CostApproval)
+
+- Persistenter Workflow pro Fall mit Referenznummer `CAP-YY-####`
+- Statusfluss (`DRAFT`, `SUBMITTED`, `APPROVED`, `REJECTED`, `EXPIRED`, `CANCELLED`)
+- Verknüpfung mit Rechnungsentwürfen (`InvoiceDraft.costApprovalId`)
+- CRUD in der Fallakte inkl. Audit-Ereignissen
+
+### 3.8 Export (ExportRecipient / ExportPackage)
+
+- Empfängerverzeichnis mit Schlüssel-Fingerprint
+- Verschlüsselte Exportpakete pro Fall inkl. Hash
+- Statusfluss (`DRAFT`, `READY`, `RELEASED`, `CANCELLED`) und Compliance-Prüfung via Share-Policy
+- Downloadroute liefert verschlüsselte Payload nur bei `READY`/`RELEASED` und schreibt `EXPORT`-Audit-Ereignis
+- Empfängerverzeichnis unterstützt CRUD (Löschen nur ohne Paket-Referenzen)
+
+### 3.9 Compliance (Retention / Archivierung / Löschplanung)
+
+- Retention-Berechnung aus Retention-Regel
+- Retention-Review pro Fall inkl. `retentionStatus`
+- Archivierung und Löschplanung mit Legal-Hold-Guardrails
+
+### 3.10 Offline-Sync / Queue
+
+- Persistenter Sync-Batch-Import über `/api/sync`
+- Speicherung in `SyncClient` und `SyncEvent`
+- Reconciliation-Workflow im UI über `Sync-Monitoring` (`/hub/sync`)
+
+### 3.11 Reports
+
+- Billing Journal CSV (`/api/reports/billing-journal`)
+- Audit Report CSV (`/api/reports/audit`)
+- Audit-Integrity CSV (`/api/reports/audit-integrity`)
+- Occupancy CSV (`/api/reports/occupancy`)
+- Open-Work CSV (`/api/reports/open-work`)
+- Export-Liste CSV (`/api/reports/export-list`)
+
 Implementiert in:
 
 - `src/lib/domain/workflows.ts`
@@ -92,8 +144,11 @@ Implementiert in:
 ## 4) UI-Abbildung
 
 - Dashboard: `src/app/hub/page.tsx`
+- Billing-Übersicht: `src/app/hub/billing/page.tsx`
+- Export- und Compliance-Übersicht: `src/app/hub/exports/page.tsx`
+- Sync-Monitoring: `src/app/hub/sync/page.tsx`
 - Fallliste + Neuanlage: `src/app/hub/cases/page.tsx`
-- Fallakte mit CRUD für Stay/ServiceEvent/Task: `src/app/hub/cases/[caseId]/page.tsx`
+- Fallakte mit CRUD für Stay/ServiceEvent/Task/Kostengutsprache/Billing/Export/Compliance: `src/app/hub/cases/[caseId]/page.tsx`
 
 ## 5) Dokumentationspflicht (verbindlich)
 
