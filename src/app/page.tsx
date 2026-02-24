@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   const pillars = [
     {
@@ -35,6 +37,12 @@ export default function Home() {
           <span className="rounded-full border border-black/10 bg-white/80 px-5 py-2 text-sm font-semibold text-foreground/80">
             Tailwind CSS
           </span>
+          <Link
+            href="/auth/login"
+            className="rounded-full border border-brand/25 bg-brand/10 px-5 py-2 text-sm font-semibold text-brand-strong"
+          >
+            Login (OIDC)
+          </Link>
         </div>
       </section>
 

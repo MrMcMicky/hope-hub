@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 
+import { authOptions } from "@/lib/auth/options";
 import { buildAppendOnlyAuditEvent } from "@/modules/audit";
 import { authorize } from "@/modules/authz";
 import type { ActorRole } from "@/modules/authz";
@@ -11,17 +13,6 @@ type SyncEventInput = {
   eventType: string;
   payload: Record<string, unknown>;
 };
-
-function parseRoles(headerValue: string | null): ActorRole[] {
-  if (!headerValue) return [];
-
-  return headerValue
-    .split(",")
-    .map((entry) => entry.trim())
-    .filter((entry): entry is ActorRole =>
-      ["ADMIN", "SHIFT_LEAD", "SHIFT_WORKER", "AUDITOR", "BILLING", "SYSTEM"].includes(entry),
-    );
-}
 
 function isSyncEventInput(value: unknown): value is SyncEventInput {
   if (!value || typeof value !== "object") return false;
@@ -39,8 +30,20 @@ function isSyncEventInput(value: unknown): value is SyncEventInput {
 }
 
 export async function POST(request: NextRequest) {
-  const actorId = request.headers.get("x-hope-actor-id") ?? "";
-  const roles = parseRoles(request.headers.get("x-hope-roles"));
+  let session;
+  try {
+    session = await getServerSession(authOptions);
+  } catch {
+    return NextResponse.json({ error: "auth_not_configured" }, { status: 503 });
+  }
+
+  const actorId = session?.user?.id ?? "";
+  const roles = (session?.user?.roles ?? []) as ActorRole[];
+  const assignmentCaseIds = session?.user?.assignmentCaseIds ?? [];
+
+  if (!actorId) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
 
   let body: unknown;
   try {
@@ -61,7 +64,7 @@ export async function POST(request: NextRequest) {
     action: "sync:append",
     resource: {
       caseId: firstCaseId,
-      assignmentCaseIds: [],
+      assignmentCaseIds,
     },
   });
 

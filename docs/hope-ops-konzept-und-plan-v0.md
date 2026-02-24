@@ -274,6 +274,7 @@ Abnahme:
 - Pflichtfelder (`data_class`, `purpose`, `legal_basis`, `share_policy`) als Model-Bestandteil im Schema
 - Audit Hash-Chain Skeleton fuer append-only Events vorhanden
 - Authz Guard als deny-by-default Kontrollpunkt vorhanden
+- OIDC Basis via Authentik (`next-auth`) mit Login-/Error-Seiten und Session-Claims-Mapping ist integriert
 
 ## 8) Offene Fragen fuer die naechsten Umsetzungsrunden
 

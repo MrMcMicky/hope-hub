@@ -39,6 +39,26 @@ npm run db:migrate:deploy
 npm run db:migrate:status
 ```
 
+## OIDC Login (Authentik)
+
+Erforderliche `.env` Variablen:
+
+```bash
+AUTHENTIK_ISSUER=https://auth.example.com/application/o/hope-hub/
+AUTHENTIK_CLIENT_ID=...
+AUTHENTIK_CLIENT_SECRET=...
+# Optional:
+AUTHENTIK_SCOPE="openid profile email groups"
+```
+
+Routen:
+
+- Login Seite: `/auth/login`
+- NextAuth Handler: `/api/auth/[...nextauth]`
+
+Hinweis:
+- `/api/sync` nutzt Session-basierte Actor-Daten (`id`, `roles`, optionale `assignmentCaseIds`) aus OIDC Claims.
+
 ## Ports (Server)
 
 - Dev: `8013`
