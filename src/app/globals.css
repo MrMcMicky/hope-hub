@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+:root {
+  --background: var(--hope-surface-soft);
+  --foreground: var(--hope-base);
+  --surface: var(--hope-surface);
+  --brand: var(--hope-primary);
+  --brand-strong: var(--hope-primary-strong);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --font-sans: var(--font-space-grotesk), var(--hope-font-body);
+  --font-display: var(--font-fraunces), var(--hope-font-heading);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--hope-primary) 16%, transparent), transparent 42%),
+    radial-gradient(circle at 90% 4%, color-mix(in srgb, var(--hope-accent) 28%, transparent), transparent 36%),
+    linear-gradient(180deg, var(--background) 0%, color-mix(in srgb, var(--hope-base) 4%, white) 100%);
+  color: var(--foreground);
+  font-family: var(--font-space-grotesk), var(--hope-font-body), sans-serif;
+}

@@ -1,0 +1,55 @@
+:root {
+  /* Brand core (from HOPE public site audit) */
+  --hope-primary: #df4e96;
+  --hope-primary-strong: #c73d85;
+  --hope-primary-soft: #fcedf5;
+  --hope-accent: #ffec55;
+  --hope-base: #0d404f;
+  --hope-surface: #ffffff;
+  --hope-surface-soft: #f8f9fa;
+  --hope-border-subtle: color-mix(in srgb, var(--hope-base) 12%, white);
+
+  /* Product status colors for operations UI */
+  --hope-success: #237a57;
+  --hope-warning: #a86700;
+  --hope-danger: #b42318;
+  --hope-info: #1f64c8;
+
+  /* Typography (brand-aligned stacks) */
+  --hope-font-heading:
+    "Quicksand",
+    ui-rounded,
+    "Hiragino Maru Gothic ProN",
+    "Arial Rounded MT",
+    sans-serif;
+  --hope-font-body:
+    "Roboto",
+    "Inter",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  --hope-font-editorial:
+    "Iowan Old Style",
+    "Palatino Linotype",
+    "URW Palladio L",
+    serif;
+
+  /* Layout */
+  --hope-content-width: 900px;
+  --hope-wide-width: 1434px;
+  --hope-sidebar-width: 14em;
+  --hope-sidebar-width-large: 21em;
+
+  /* Spacing scale */
+  --hope-space-1: 1.5rem;
+  --hope-space-2: clamp(1.75rem, 2.5vw, 2.5rem);
+  --hope-space-3: clamp(2.5rem, 3.75vw, 3.75rem);
+  --hope-space-4: clamp(4.2rem, 7vw, 7rem);
+
+  /* Radius and shadows */
+  --hope-radius-sm: 0.5rem;
+  --hope-radius-md: 0.75rem;
+  --hope-radius-lg: 1rem;
+  --hope-radius-xl: 1.5rem;
+  --hope-shadow-soft: 0 0.375rem 1.5rem 0 rgb(0 0 0 / 0.05);
+}

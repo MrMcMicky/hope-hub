@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "project": "HOPE Hub",
+    "source_site": "https://www.hope-baden.ch/",
+    "captured_on": "2026-02-23",
+    "notes": "Extracted from live HTML/CSS + inline SVG logo"
+  },
+  "colors": {
+    "primary": "#df4e96",
+    "primary_light_mixed": "color-mix(in srgb, var(--wp--preset--color--primary) 10%, white)",
+    "primary_light_approx": "#fcedf5",
+    "accent": "#ffec55",
+    "base": "#0d404f",
+    "light_mixed": "color-mix(in srgb, var(--wp--preset--color--base) 3%, white)",
+    "light_approx": "#f8f9fa",
+    "white": "#ffffff",
+    "logo_palette": [
+      "#f3cb2d",
+      "#de58a0",
+      "#fcdd2c",
+      "#f9ee60"
+    ]
+  },
+  "fonts": {
+    "heading_stack": "Quicksand, ui-rounded, 'Hiragino Maru Gothic ProN', Comfortaa, Manjari, 'Arial Rounded MT', 'Arial Rounded MT Bold', Calibri, source-sans-pro, sans-serif",
+    "body_stack": "Roboto, Inter, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif",
+    "serif_stack": "'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif",
+    "font_files": {
+      "quicksand_variable": "https://www.hope-baden.ch/wp-content/themes/hope-baden/assets/fonts/Quicksand-VariableFont_wght.ttf",
+      "roboto_300": "https://www.hope-baden.ch/wp-content/themes/hope-baden/assets/fonts/Roboto-Thin.ttf",
+      "roboto_400": "https://www.hope-baden.ch/wp-content/themes/hope-baden/assets/fonts/Roboto-Regular.ttf",
+      "roboto_500": "https://www.hope-baden.ch/wp-content/themes/hope-baden/assets/fonts/Roboto-Medium.ttf",
+      "roboto_700": "https://www.hope-baden.ch/wp-content/themes/hope-baden/assets/fonts/Roboto-Bold.ttf"
+    }
+  },
+  "sizing": {
+    "content_width": "900px",
+    "wide_width": "1434px",
+    "sidebar_width": "14em",
+    "sidebar_width_large": "21em",
+    "spacing": {
+      "small": "1.5rem",
+      "normal": "clamp(1.75rem, 2.5vw, 2.5rem)",
+      "medium": "clamp(2.5rem, 3.75vw, 3.75rem)",
+      "large": "clamp(4.2rem, 7vw, 7rem)"
+    }
+  },
+  "breakpoints": [
+    "max-width: 428px",
+    "min-width: 429px",
+    "max-width: 768px",
+    "max-width: 1032px",
+    "min-width: 1032px",
+    "min-width: 1174px",
+    "max-width: 1400px",
+    "810px <= width <= 1032px"
+  ],
+  "ui_patterns": {
+    "navigation": {
+      "meta_menu": [
+        "Aktuell",
+        "Shop",
+        "Angebote",
+        "Jobs",
+        "Kontakt",
+        "Downloads"
+      ],
+      "primary_menu": [
+        "Wer wir sind",
+        "Was wir tun",
+        "Wie Sie helfen",
+        "spenden"
+      ]
+    },
+    "donation_cta": {
+      "selector_hint": ".primary-menu .menu>*>[href*='/spenden']",
+      "background": "var(--wp--preset--color--primary-light)",
+      "text": "var(--wp--preset--color--primary)",
+      "layout": "inline-flex"
+    }
+  },
+  "assets": {
+    "logo_svg": "docs/design/assets/hope-logo-inline-2026-02-23.svg",
+    "favicon": "docs/design/assets/hope-favicon-2026-02-23.avif",
+    "favicon_300": "docs/design/assets/hope-favicon-300-2026-02-23.avif"
+  }
+}
