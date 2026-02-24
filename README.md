@@ -59,6 +59,24 @@ Routen:
 Hinweis:
 - `/api/sync` nutzt Session-basierte Actor-Daten (`id`, `roles`, optionale `assignmentCaseIds`) aus OIDC Claims.
 
+## Demo Login (Prototype)
+
+Fuer Demo-/Proposal-Termine kann ein Credentials-Login aktiviert werden:
+
+```bash
+DEMO_ADMIN_EMAIL=demo.admin@example.com
+DEMO_ADMIN_PASSWORD=replace-with-strong-demo-password
+DEMO_ADMIN_NAME="Demo Super Admin"
+```
+
+Routen:
+
+- Login Seite: `/auth/login`
+- Demo Cockpit (geschuetzt): `/hub`
+
+Hinweis:
+- Der Demo-Login ist nur fuer Prototyping gedacht und ersetzt kein produktives IAM.
+
 ## Ports (Server)
 
 - Dev: `8013`

@@ -1,5 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
 import AuthentikProvider, { type AuthentikProfile } from "next-auth/providers/authentik";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 import { caseIdsFromClaims, caseIdsFromTokenLike, rolesFromClaims, rolesFromTokenLike } from "./role-mapping";
 
@@ -11,6 +12,14 @@ const authentikEnv = {
 };
 
 const hasAuthentikEnv = Boolean(authentikEnv.issuer && authentikEnv.clientId && authentikEnv.clientSecret);
+
+const demoAdminEnv = {
+  email: process.env.DEMO_ADMIN_EMAIL,
+  password: process.env.DEMO_ADMIN_PASSWORD,
+  name: process.env.DEMO_ADMIN_NAME ?? "Demo Super Admin",
+};
+
+const hasDemoAdminEnv = Boolean(demoAdminEnv.email && demoAdminEnv.password);
 
 if (!hasAuthentikEnv && process.env.NODE_ENV === "development") {
   console.warn(
@@ -46,6 +55,32 @@ const authentikProvider = AuthentikProvider({
   },
 });
 
+const demoCredentialsProvider = CredentialsProvider({
+  id: "demo-admin",
+  name: "Demo Admin Login",
+  credentials: {
+    email: { label: "E-Mail", type: "email" },
+    password: { label: "Passwort", type: "password" },
+  },
+  async authorize(credentials) {
+    if (!hasDemoAdminEnv) return null;
+
+    const email = credentials?.email?.trim().toLowerCase() ?? "";
+    const password = credentials?.password ?? "";
+
+    if (email !== demoAdminEnv.email?.toLowerCase()) return null;
+    if (password !== demoAdminEnv.password) return null;
+
+    return {
+      id: `demo-admin:${demoAdminEnv.email}`,
+      email: demoAdminEnv.email,
+      name: demoAdminEnv.name,
+      role: "ADMIN",
+      roles: ["ADMIN"],
+    };
+  },
+});
+
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
@@ -54,7 +89,7 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/login",
     error: "/auth/error",
   },
-  providers: [authentikProvider],
+  providers: [demoCredentialsProvider, authentikProvider],
   callbacks: {
     async jwt({ token, user, profile }) {
       if (profile && typeof profile === "object") {
@@ -103,4 +138,9 @@ export const authOptions: NextAuthOptions = {
 
 export const authentikConfigStatus = {
   configured: hasAuthentikEnv,
+};
+
+export const demoCredentialsStatus = {
+  configured: hasDemoAdminEnv,
+  email: demoAdminEnv.email ?? "",
 };

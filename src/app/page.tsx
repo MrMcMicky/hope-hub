@@ -43,6 +43,12 @@ export default function Home() {
           >
             Login (OIDC)
           </Link>
+          <Link
+            href="/hub"
+            className="rounded-full border border-black/15 bg-white px-5 py-2 text-sm font-semibold text-foreground/80"
+          >
+            Demo Cockpit
+          </Link>
         </div>
       </section>
 
