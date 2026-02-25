@@ -73,6 +73,8 @@ export default async function HubPage({ searchParams }: HubPageProps) {
 
     return byStatus && byQuery;
   });
+  const caseRows = visibleCases.slice(0, 12);
+  const hiddenCaseCount = Math.max(0, visibleCases.length - caseRows.length);
 
   const now = new Date();
   const todayTasks = snapshot.tasks
@@ -227,29 +229,30 @@ export default async function HubPage({ searchParams }: HubPageProps) {
             </form>
           </div>
 
-          <div className="max-h-[560px] overflow-auto">
-            <table className="min-w-full text-left text-sm">
-              <thead className="sticky top-0 bg-white text-xs uppercase tracking-[0.12em] text-foreground/70">
+          <div>
+            <table className="min-w-full table-fixed text-left text-sm">
+              <thead className="bg-white text-xs uppercase tracking-[0.12em] text-foreground/70">
                 <tr>
-                  <th className="px-4 py-3">Case</th>
-                  <th className="px-4 py-3">Person</th>
-                  <th className="px-4 py-3">Angebot</th>
+                  <th className="w-[16%] px-4 py-3">Case</th>
+                  <th className="w-[34%] px-4 py-3">Person / Angebot</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Risiko</th>
                   <th className="px-4 py-3">Tasks</th>
-                  <th className="px-4 py-3">Aktionen</th>
+                  <th className="w-[23%] px-4 py-3">Aktionen</th>
                 </tr>
               </thead>
               <tbody>
-                {visibleCases.map((item) => (
+                {caseRows.map((item) => (
                   <tr key={item.id} className="border-t border-black/8">
                     <td className="px-4 py-3 font-semibold text-foreground">
                       <Link href={`/hub/cases/${item.id}`} className="underline decoration-brand/40 underline-offset-4">
                         {item.caseRef}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-foreground/88">{item.subjectDisplayName}</td>
-                    <td className="px-4 py-3 text-foreground/86">{item.offering}</td>
+                    <td className="px-4 py-3">
+                      <p className="font-semibold leading-5 text-foreground/92">{item.subjectDisplayName}</p>
+                      <p className="mt-0.5 text-[13px] leading-5 text-foreground/78">{item.offering}</p>
+                    </td>
                     <td className="px-4 py-3">
                       <StatusBadge value={item.status} />
                     </td>
@@ -271,6 +274,14 @@ export default async function HubPage({ searchParams }: HubPageProps) {
                 ))}
               </tbody>
             </table>
+            {hiddenCaseCount > 0 ? (
+              <p className="px-4 py-3 text-xs text-foreground/72">
+                {hiddenCaseCount} weitere Fälle vorhanden.
+                <Link href="/hub/cases" className="ml-1 font-semibold text-foreground underline decoration-brand/40 underline-offset-4">
+                  Vollständige Fallliste öffnen
+                </Link>
+              </p>
+            ) : null}
           </div>
         </article>
 
