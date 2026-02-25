@@ -17,7 +17,7 @@ const TABS: Array<{ key: HubNavTab; label: string; href: string }> = [
 
 function tabClass(isActive: boolean): string {
   if (isActive) {
-    return "rounded-xl border border-brand bg-brand px-4 py-2 text-sm font-semibold text-white";
+    return "rounded-xl border border-brand/35 bg-brand/10 px-4 py-2 text-sm font-semibold text-brand-strong";
   }
 
   return "rounded-xl border border-black/12 bg-white px-4 py-2 text-sm font-semibold text-foreground/85 hover:border-brand/40";
@@ -26,7 +26,11 @@ function tabClass(isActive: boolean): string {
 export function HubNav({ active }: HubNavProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Link href="/hub/cases#new-case" className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white">
+      <Link
+        href="/hub/cases#new-case"
+        className="inline-flex items-center gap-1.5 rounded-xl border border-brand/80 bg-brand px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_-12px_rgba(199,61,133,0.85)] hover:bg-brand-strong"
+      >
+        <span aria-hidden>+</span>
         Neuer Fall
       </Link>
       {TABS.map((tab) => (
