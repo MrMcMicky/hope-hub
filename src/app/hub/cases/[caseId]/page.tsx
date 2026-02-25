@@ -92,10 +92,9 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8 sm:px-10">
       <header className="rounded-3xl border border-black/10 bg-surface/95 p-6 shadow-[0_18px_60px_-26px_rgb(18_22_27/0.38)] sm:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <HopeLogo variant="mark" className="h-auto w-16 sm:w-20" sizes="(max-width: 640px) 64px, 80px" />
-            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-strong">Fallakte</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-strong">Fallakte</p>
             <h1 className="mt-2 font-display text-3xl leading-tight text-foreground">
               {caseItem.caseRef} | {caseItem.subjectDisplayName}
             </h1>
@@ -108,6 +107,9 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
               </Link>
             </p>
           </div>
+          <HopeLogo variant="mark" className="h-auto w-9 shrink-0 sm:w-11" sizes="(max-width: 640px) 36px, 44px" />
+        </div>
+        <div className="mt-4">
           <HubNav active="cases" />
         </div>
       </header>

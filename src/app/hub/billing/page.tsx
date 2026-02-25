@@ -36,20 +36,18 @@ export default async function BillingPage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8 sm:px-10">
       <header className="rounded-3xl border border-black/10 bg-surface/95 p-6 shadow-[0_18px_60px_-26px_rgb(18_22_27/0.38)] sm:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <HopeLogo variant="mark" className="h-auto w-16 sm:w-20" sizes="(max-width: 640px) 64px, 80px" />
-            <h1 className="mt-2 font-display text-3xl leading-tight text-foreground">Billing</h1>
+            <h1 className="font-display text-3xl leading-tight text-foreground">Billing</h1>
             <p className="mt-2 text-sm text-foreground/85">Alle Rechnungsentwürfe und Statusstände im Überblick.</p>
           </div>
-          <div className="space-y-2">
-            <HubNav active="billing" />
-            <div className="flex justify-end">
-              <Link href="/hub/reports" className="rounded-xl border border-black/12 bg-white px-4 py-2 text-sm font-semibold text-foreground/88 hover:border-brand/40">
-                Reports öffnen
-              </Link>
-            </div>
-          </div>
+          <HopeLogo variant="mark" className="h-auto w-9 shrink-0 sm:w-11" sizes="(max-width: 640px) 36px, 44px" />
+        </div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <HubNav active="billing" />
+          <Link href="/hub/reports" className="rounded-xl border border-black/12 bg-white px-4 py-2 text-sm font-semibold text-foreground/88 hover:border-brand/40">
+            Reports öffnen
+          </Link>
         </div>
       </header>
 

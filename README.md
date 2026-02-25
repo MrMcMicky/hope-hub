@@ -52,6 +52,7 @@ Next.js App für `hope-hub.online` mit getrennter Dev- und Prod-Umgebung.
 - UI/Usability (Stand 25.02.2026):
   - Frontpage-Logo grössenoptimiert für bessere visuelle Balance
   - Dashboard-Header mit kleinem, rechtsbündigem Logo auf Titelhöhe
+  - Alle Hub-Unterseiten nutzen dasselbe Header-Muster mit kleinem, rechtsbündigem Logo
   - Fallliste mit klickbarer Spaltensortierung (`Case`, `Person`, `Angebot`, `Status`, `Risiko`, `Retention`, `Open Tasks`, `Open Stay`)
 
 ## Branding (Logo)
