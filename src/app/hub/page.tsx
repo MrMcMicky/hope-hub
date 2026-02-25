@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { HopeLogo } from "@/app/_components/hope-logo";
 import { HubNav } from "@/app/hub/_components/hub-nav";
 import { StatusBadge } from "@/app/hub/_components/status-badge";
 import { requireHubActor } from "@/lib/auth/session";
@@ -86,7 +87,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
       <header className="rounded-3xl border border-black/10 bg-surface/95 p-6 shadow-[0_18px_60px_-26px_rgb(18_22_27/0.38)] sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-strong">HOPE Hub</p>
+            <HopeLogo variant="mark" className="h-auto w-16 sm:w-20" sizes="(max-width: 640px) 64px, 80px" />
             <h1 className="mt-2 font-display text-3xl leading-tight text-foreground sm:text-4xl">Operations Cockpit</h1>
             <p className="mt-3 text-sm text-foreground/85">
               Angemeldet als <strong>{actor.email}</strong> ({actor.roles[0]}) | Datenstand {formatDateTime(snapshot.generatedAt)}

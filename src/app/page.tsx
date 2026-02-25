@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { HopeLogo } from "@/app/_components/hope-logo";
+
 export default function Home() {
   const capabilities = [
     {
@@ -55,9 +57,17 @@ export default function Home() {
           className="pointer-events-none absolute -bottom-28 left-1/4 h-72 w-72 rounded-full bg-[color:var(--hope-primary)]/22 blur-3xl"
         />
 
-        <p className="mb-5 inline-flex rounded-full border border-brand/25 bg-brand/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-strong">
-          HOPE Hub | Sales Draft v1
-        </p>
+        <div className="mb-5 flex flex-wrap items-center gap-3">
+          <HopeLogo
+            variant="full"
+            priority
+            className="h-auto w-[220px] sm:w-[290px]"
+            sizes="(max-width: 640px) 220px, 290px"
+          />
+          <p className="inline-flex rounded-full border border-brand/25 bg-brand/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-strong">
+            Sales Draft v1
+          </p>
+        </div>
 
         <h1 className="max-w-5xl font-display text-4xl leading-[1.03] tracking-tight text-foreground sm:text-6xl">
           Operative Plattform für HOPE:

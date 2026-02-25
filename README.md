@@ -50,6 +50,16 @@ Next.js App für `hope-hub.online` mit getrennter Dev- und Prod-Umgebung.
 - Sales-Frontpage für Erstgespräche:
   - `/` (Nutzenargumentation, Demo-Ablauf, HOPE-Struktur, aktueller Ausbaustand)
 
+## Branding (Logo)
+
+- Logo-Assets:
+  - Gross mit Text: `public/brand/hope-logo-full.png`
+  - Klein nur Grafik: `public/brand/hope-logo-mark.png`
+- Einheitliche Nutzung über Component:
+  - `src/app/_components/hope-logo.tsx`
+- Regel:
+  - In Headern und Einstiegsseiten das `HopeLogo`-Component verwenden, nicht eine reine Textmarke wie `HOPE Hub`.
+
 ## Lokal entwickeln
 
 ```bash

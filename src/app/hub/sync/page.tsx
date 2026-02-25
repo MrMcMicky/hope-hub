@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { markSyncEventAppliedAction } from "@/app/hub/actions";
+import { HopeLogo } from "@/app/_components/hope-logo";
 import { HubNav } from "@/app/hub/_components/hub-nav";
 import { requireHubActor } from "@/lib/auth/session";
 import { ensureSeedData, getSyncQueueSnapshot } from "@/lib/domain/workflows";
@@ -30,7 +31,7 @@ export default async function SyncPage() {
       <header className="rounded-3xl border border-black/10 bg-surface/95 p-6 shadow-[0_18px_60px_-26px_rgb(18_22_27/0.38)] sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-strong">HOPE Hub</p>
+            <HopeLogo variant="mark" className="h-auto w-16 sm:w-20" sizes="(max-width: 640px) 64px, 80px" />
             <h1 className="mt-2 font-display text-3xl leading-tight text-foreground">Sync-Monitoring</h1>
             <p className="mt-2 text-sm text-foreground/85">Offline-Queue, Geräte-Clients und Reconciliation-Status.</p>
           </div>
