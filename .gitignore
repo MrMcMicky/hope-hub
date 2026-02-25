@@ -36,6 +36,9 @@ yarn-error.log*
 # local backups
 package-lock.json.bak.*
 
+# local screenshots and ad-hoc captures
+docs/screenshots/*.png
+
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
