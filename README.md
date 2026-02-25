@@ -49,6 +49,10 @@ Next.js App für `hope-hub.online` mit getrennter Dev- und Prod-Umgebung.
   - `/api/exports/[exportId]/download` (verschlüsseltes Paket, Audit-Event bei Download)
 - Sales-Frontpage für Erstgespräche:
   - `/` (Nutzenargumentation, Demo-Ablauf, HOPE-Struktur, aktueller Ausbaustand)
+- UI/Usability (Stand 25.02.2026):
+  - Frontpage-Logo grössenoptimiert für bessere visuelle Balance
+  - Dashboard-Header mit kleinem, rechtsbündigem Logo auf Titelhöhe
+  - Fallliste mit klickbarer Spaltensortierung (`Case`, `Person`, `Angebot`, `Status`, `Risiko`, `Retention`, `Open Tasks`, `Open Stay`)
 
 ## Branding (Logo)
 

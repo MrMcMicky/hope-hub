@@ -61,8 +61,8 @@ export default function Home() {
           <HopeLogo
             variant="full"
             priority
-            className="h-auto w-[220px] sm:w-[290px]"
-            sizes="(max-width: 640px) 220px, 290px"
+            className="h-auto w-[170px] sm:w-[220px]"
+            sizes="(max-width: 640px) 170px, 220px"
           />
           <p className="inline-flex rounded-full border border-brand/25 bg-brand/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-strong">
             Sales Draft v1
